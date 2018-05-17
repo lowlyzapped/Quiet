@@ -2,6 +2,7 @@
 
 config.json
 
-*.bat
 texts/rules.md
 texts/welcome.md
+
+*.bat

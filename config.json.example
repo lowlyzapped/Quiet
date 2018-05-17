@@ -4,5 +4,6 @@
   "ownerID":"",
   "logChannel":"",
   "embedColor":"0x",
-  "modRole": ""
+  "modRole":"",
+  "muteRole":""
 }

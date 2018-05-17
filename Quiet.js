@@ -3,10 +3,15 @@ const fs = require('fs');
 const client = new Discord.Client();
 
 var config = require('./config.json');
+var package = require('./package.json')
 var rulesTextPath = "./texts/rules.md";
-var rulesText;
 // var welcomeTextPath = "./texts/welcome.md";
-// var welcomeText;
+
+var helpBTextPath = "./texts/help/helpBasic.md"; // TODO make this into a seperate .js file
+var helpBCTextPath = "./texts/help/helpBotCosmetic.md";
+var helpMTextPath = "./texts/help/helpMod.md";
+var helpOTextPath = "./texts/help/helpOwner.md";
+var helpPTextPath = "./texts/help/helpPoll.md";
 
 var https = require('https');
 var http = require('http');
@@ -16,27 +21,22 @@ if (config.token == '' || config.prefix == '') {
     process.exit(1);
 }
 
+if (!fs.existsSync(helpBTextPath)) {
+    console.log("The file " + helpBTextPath + " does not exist. This may cause errors.");
+}
+
 // if (!fs.existsSync(welcomeTextPath)) {
-//     console.log("The file " + welcomeTextPath + " does not exist. This may cause errors.")
-// }
-// else {
-//     fs.readFile(welcomeTextPath, 'utf8', (err, data) => {
-//         if (err) {
-//             console.log(err);
-//             return;
-//         }
-//         welcomeText = welcomeData;
-//     });
+//     console.log("The file " + welcomeTextPath + " does not exist. This may cause errors.");
 // }
 
 if (!fs.existsSync(rulesTextPath)) {
-    console.log("The file " + rulesTextPath + " does not exist. This may cause errors.")
+    console.log("The file " + rulesTextPath + " does not exist. This may cause errors.");
 }
 
 client.on('ready', () => {
            console.log(client.user.username + " online.");
            client.user.setStatus('online'); //online, idle, dnd, invisible
-           client.user.setPresence({game:{name:config.prefix+"help", type:0}});
+           client.user.setPresence({game:{name:config.prefix+"help | v"+ package.version, type:0}});
          });
 
 client.on('error', (err) => console.error(err));
@@ -50,7 +50,7 @@ client.on('guildMemberAdd', member => { // when a member joins the server
              .setAuthor(client.user.username, client.user.avatarURL)
              .setDescription(""+member+" joined the server.")
              .setTimestamp()
-           channel.send({embed}); // fancy message
+           channel.send({embed}).catch(console.error);
           });
 
 client.on('guildMemberRemove', member => {
@@ -62,26 +62,17 @@ client.on('guildMemberRemove', member => {
              .setAuthor(client.user.username, client.user.avatarURL)
              .setDescription("**"+member.user.username+"#"+member.user.discriminator+"** left the server.")
              .setTimestamp()
-           channel.send({embed});
+           channel.send({embed}).catch(console.error);
          });
 
 client.on('message', message => {  // message function
 
-if (message.channel.type === 'dm' && message.content.startsWith(config.prefix) && message.author.id !== config.ownerID) { //if a message sent in DM starts with $
+if (message.channel.type === 'dm' && message.content.startsWith(config.prefix)) { //if a message sent in DM starts with $
     message.author.send("**ACCESS DENIED**\nCan't perform commands in DM."); //denies everything
     return;
 }
 
-if (message.author.bot) { //auto-deletion for maximum cleaning
-    if (message.content.includes("help has been sent.")) message.delete(5000);
-    if (message.content.includes("the rules have been sent.")) message.delete(5000);
-    if (message.content.includes("an error has occured. Please execute")) message.delete(5000);
-    if (message.content.includes("you are missing an argument")) message.delete(5000);
-    if (message.content.includes("It's a tie, let's try again!")) message.delete(5000); // $rps
-    if (message.content.includes("beat") || message.content.includes("win!")) message.delete(5000);
-    if (message.content.includes("Rock!") || message.content.includes("Paper!") ||message.content.includes("Scissors!")) message.delete(5000);
-    return; // ignores bots
-}
+if (message.author.bot) return; // ignores bots
 
 var modRole = message.guild.roles.find("name", config.modRole);
 if (message.content.includes("discord.gg/")) {
@@ -95,108 +86,89 @@ const command = args.shift().toLowerCase(); // fancy magic
 if (command === 'ping') { // gets reply time
     message.delete(0);
     if (message.author.id !== config.ownerID) return;
-    message.channel.send("Latency of **"+Math.round(client.ping)+"** ms.");
+    message.channel.send("Latency of **"+Math.round(client.ping)+"** ms.").then(m => m.delete(2000));
 }
 
 if (command === 'help') {
     message.delete(5000); // deletes the user's message after ~5 seconds
-    message.reply("help has been sent.");
-    var $ = config.prefix;
+    message.reply("help has been sent.").then(m => m.delete(5000));
 
     if (!message.member.roles.has(modRole.id) && message.author.id !== config.ownerID) {
+        fs.readFile(helpBTextPath, 'utf8', (err, helpBasic) => {
+            if (err) return console.log(err);
+
         var embed = new Discord.RichEmbed()
           .setColor(config.embedColor)
           .setTitle(client.user.username)
           .setDescription("A complete list of the available commands.")
           .setThumbnail(client.user.avatarURL)
-          .addField("Basic Commands:", // Max 25 fields
-                    "`"+$+"help` - Sends the user a list of the available commands.\n"+
-                    "`"+$+"rules` - Sends the user the rules of the server.\n"+
-                    "`"+$+"avatar` - Sends the user his own avatar.\n"+
-                    "`"+$+"coin` - Flips a coin.\n"+
-                    "`"+$+"joined` - Displays for how long the user has been on the server.\n"+
-                    "`"+$+"roll <n> <f>` - Roll n f-sided dice, sums the result.\n"+
-                    "`"+$+"rps <rock/paper/scissors>` - Play rock-paper-scissors with the bot.\n",
-                    true)
+          .addField("Basic Commands:", helpBasic, true)
           .setFooter("For additional help, contact TheV0rtex#4553")
           // .setTimestamp() // By default today's date.
-        message.author.send({embed});
+        message.author.send({embed}).catch(console.error);
         return;
+
+        });
     }
 
-    if (message.member.roles.has(modRole.id) && message.author.id !== config.ownerID) {
+    else if (message.member.roles.has(modRole.id) && message.author.id !== config.ownerID) {
+        fs.readFile(helpBTextPath, 'utf8', (err, helpBasic) => {
+            if (err) return console.log(err);
+
+        fs.readFile(helpMTextPath, 'utf8', (err, helpMod) => {
+            if (err) return console.log(err);
+
+        fs.readFile(helpPTextPath, 'utf8', (err, helpPoll) => {
+            if (err) return console.log(err);
+
         var embed = new Discord.RichEmbed()
           .setColor(config.embedColor)
           .setTitle(client.user.username)
           .setDescription("A complete list of the available commands.")
           .setThumbnail(client.user.avatarURL)
-          .addField("Basic Commands:", // Max 25 fields
-                    "`"+$+"help` - Sends the user a list of the available commands.\n"+
-                    "`"+$+"rules` - Sends the user the rules of the server.\n"+
-                    "`"+$+"avatar` - Sends the user his own avatar.\n"+
-                    "`"+$+"coin` - Flips a coin.\n"+
-                    "`"+$+"joined` - Displays for how long the user has been on the server.\n"+
-                    "`"+$+"roll <n> <f>` - Roll n f-sided dice, sums the result.\n"+
-                    "`"+$+"rps <rock/paper/scissors>` - Play rock-paper-scissors with the bot.\n",
-                    true)
-          .addField("Moderator Commands:",
-                    "`"+$+"ban <@mention>` - Bans the targeted user from the server.\n"+
-                    "`"+$+"kick <@mention>` - Kicks the targeted user from the server.\n"+
-                    "`"+$+"members` - Sends the number of members on the server.\n"+
-                    "`"+$+"memberlist` - Sends a list of members on the server with set roles.\n"+
-                    "`"+$+"purge <value>` - Deletes a number of messages. (Max 100)\n"+
-                    "`"+$+"say` - Talk as the bot.\n",
-                    true)
-          .addField("Poll Commands:",
-                    "`"+$+"poll <title> | <description>` - Creates a yes/no poll.\n"+
-                    "`"+$+"epoll <title> | <description> | <choice 1> | <choice 2>` - Creates a poll with 2 to 5 possible choices.\n",
-                     true)
+          .addField("Basic Commands:", helpBasic, true)
+          .addField("Moderator Commands:", helpMod, true)
+          .addField("Poll Commands:", helpPoll, true)
           .setFooter("For additional help, contact TheV0rtex#4553")
         // .setTimestamp() // By default today's date.
-      message.author.send({embed});
-      return;
+        message.author.send({embed}).catch(console.error);
+        return;
+
+        }); }); });
     }
 
-    var embed = new Discord.RichEmbed()
-      .setColor(config.embedColor)
-      .setTitle(client.user.username)
-      .setDescription("A complete list of the available commands.")
-      .setThumbnail(client.user.avatarURL)
-      .addField("Basic Commands:", // Max 25 fields
-                "`"+$+"help` - Sends the user a list of the available commands.\n"+
-                "`"+$+"rules` - Sends the user the rules of the server.\n"+
-                "`"+$+"avatar` - Sends the user his own avatar.\n"+
-                "`"+$+"coin` - Flips a coin.\n"+
-                "`"+$+"joined` - Displays for how long the user has been on the server.\n"+
-                "`"+$+"roll <n> <f>` - Roll n f-sided dice, sums the result.\n"+
-                "`"+$+"rps <rock/paper/scissors>` - Play rock-paper-scissors with the bot.\n",
-                true)
-      .addField("Moderator Commands:",
-                "`"+$+"ban <@mention>` - Bans the targeted user from the server.\n"+
-                "`"+$+"kick <@mention>` - Kicks the targeted user from the server.\n"+
-                "`"+$+"members` - Sends the number of members on the server.\n"+
-                "`"+$+"memberlist` - Sends a list of members on the server with set roles.\n"+
-                "`"+$+"purge <value>` - Deletes a number of messages. (Max 100)\n"+
-                "`"+$+"say` - Talk as the bot.\n",
-                true)
-      .addField("Poll Commands:",
-                "`"+$+"poll <title> § <description>` - Creates a yes/no poll.\n"+
-                "`"+$+"epoll <title> § <description> § <choice 1> § <choice 2>` - Creates a poll with 2 to 5 possible choices.\n",
-                 true)
-      .addField("Owner Commands:",
-                "`"+$+"ping` - Checks the bot's latency.\n"+
-                "`"+$+"serverinfo` - Displays information about the server.\n"+
-                "`"+$+"uptime` - Sends how long the bot has been online.\n",
-                true)
-      .addField("Bot Cosmetic Commands:",
-                "`"+$+"setgame [keyword]` - Changes the game the bot is playing.\n"+
-                "`"+$+"setnickname [keyword]` - Sets the bot's nickname.\n"+
-                "`"+$+"setstatus [keyword]` - Changes the bot's status.\n"+
-                "`"+$+"reset` - Resets bot's game, status and nickname.\n",
-                 true)
-      .setFooter("For additional help, contact TheV0rtex#4553")
-      // .setTimestamp() // By default today's date.
-    message.author.send({embed});
+    else {
+        fs.readFile(helpBTextPath, 'utf8', (err, helpBasic) => {
+            if (err) return console.log(err);
+
+        fs.readFile(helpMTextPath, 'utf8', (err, helpMod) => {
+            if (err) return console.log(err);
+
+        fs.readFile(helpPTextPath, 'utf8', (err, helpPoll) => {
+            if (err) return console.log(err);
+
+        fs.readFile(helpBCTextPath, 'utf8', (err, helpBotCosmetic) => {
+            if (err) return console.log(err);
+
+        fs.readFile(helpOTextPath, 'utf8', (err, helpOwner) => {
+            if (err) return console.log(err);
+
+        var embed = new Discord.RichEmbed()
+          .setColor(config.embedColor)
+          .setTitle(client.user.username)
+          .setDescription("A complete list of the available commands.")
+          .setThumbnail(client.user.avatarURL)
+          .addField("Basic Commands:", helpBasic, true)
+          .addField("Moderator Commands:", helpMod, true)
+          .addField("Poll Commands:", helpPoll, true)
+          .addField("Bot Cosmetic Commands:", helpBotCosmetic, true)
+          .addField("Owner Commands:", helpOwner, true)
+          .setFooter("For additional help, contact TheV0rtex#4553")
+          // .setTimestamp() // By default today's date.
+        message.author.send({embed}).catch(console.error);
+
+        }); }); }); }); });
+    }
 }
 
 if (command === "rules" || command === "rule") {
@@ -215,15 +187,15 @@ if (command === "rules" || command === "rule") {
         .setFooter(new Date())
 
     message.reply('rules have been sent.')
-        .then(m => m.delete(5000))
-        .catch(console.log());
+        .then(m => m.delete(5000));
 
     message.author.send({embed})
-        .catch(console.log());
+        .catch(console.error);
     });
 }
 
 if (command === 'joined') {
+    message.delete(0);
     var member = message.channel.guild.fetchMember(message.author)
     .then(member => {
         var date = member.joinedAt;
@@ -241,7 +213,7 @@ if (command === 'joined') {
         end += mins.toString() + " (UTC)"
 
        message.reply("you joined on " + end)
-     });
+     }).catch(console.error);
 }
 
 if (command === 'avatar') {
@@ -253,22 +225,25 @@ if (command === 'avatar') {
         .setFooter('Powered by '+client.user.username+'™')
 
     message.reply('your avatar:');
-    message.channel.send({embed});
+    message.channel.send({embed})
+      .catch(console.error);
 }
 
 if (command === 'coin') { // flip a coin
-  message.delete();
+  message.delete(0);
   var flip = Math.floor(Math.random() * 2 + 1);
   if (flip === 1) {
-      message.channel.send("Flipped **Tails** !");
+      message.channel.send("Flipped **Tails** !")
+        .then(m => m.delete(5000));
   }
   else {
-      message.channel.send("Flipped **Heads** !");
+      message.channel.send("Flipped **Heads** !")
+        .then(m => m.delete(5000));
   }
 }
 
 if (command === 'roll') { // roll a dice
-    message.delete();
+    message.delete(5000);
     var dice = parseFloat(args[0]);
     if (args.length != 2) return;
 
@@ -282,7 +257,8 @@ if (command === 'roll') { // roll a dice
     var total = Math.floor(dice * ((Math.random() * sides) + 1));
     if (total > Math.floor(dice * sides)) total = Math.floor(dice * sides);
     message.channel.send("Rolled **" + dice + "** " + sides + "-sided dice and got **" + total + "**")
-      .then(message.delete(5000));
+      .then(m => m.delete(5000))
+      .catch(console.error);
 }
 
 if (command === 'rps') { // rock paper scissor
@@ -296,21 +272,30 @@ if (command === 'rps') { // rock paper scissor
     // rps: rock is 1, paper is 2 and scissors is 3
     if (rps === 1) {
         message.channel.send("Rock!");
-        if (args[0] == "rock" || args[0] == "r") message.channel.send("It's a tie, let's try again!");
-        if (args[0] == "paper" || args[0] == "p") message.channel.send("Paper beats rock, you win!");
-        if (args[0] == "scissors" || args[0] == "scissor" || args[0] == "s") message.channel.send("Rock beats scissors, I win!");
+        if (args[0] == "rock" || args[0] == "r") message.channel.send("It's a tie, let's try again!")
+          .then(m => m.delete(5000));
+        if (args[0] == "paper" || args[0] == "p") message.channel.send("Paper beats rock, you win!")
+          .then(m => m.delete(5000));
+        if (args[0] == "scissors" || args[0] == "scissor" || args[0] == "s") message.channel.send("Rock beats scissors, I win!")
+          .then(m => m.delete(5000));
     }
     if (rps === 2) {
         message.channel.send("Paper!");
-        if (args[0] == "rock" || args[0] == "r") message.channel.send("Paper beats rock, I win!");
-        if (args[0] == "paper" || args[0] == "p") message.channel.send("It's a tie, let's try again!");
-        if (args[0] == "scissors" || args[0] == "scissor" || args[0] == "s") message.channel.send("Scissors beat paper, you win!");
+        if (args[0] == "rock" || args[0] == "r") message.channel.send("Paper beats rock, I win!")
+          .then(m => m.delete(5000));
+        if (args[0] == "paper" || args[0] == "p") message.channel.send("It's a tie, let's try again!")
+          .then(m => m.delete(5000));
+        if (args[0] == "scissors" || args[0] == "scissor" || args[0] == "s") message.channel.send("Scissors beat paper, you win!")
+          .then(m => m.delete(5000));
     }
     if (rps === 3) {
         message.channel.send("Scissors!");
-        if (args[0] == "rock" || args[0] == "r") message.channel.send("Rock beats scissors, you win!");
-        if (args[0] == "paper" || args[0] == "p") message.channel.send("Scissors beat paper, I win!");
-        if (args[0] == "scissors" || args[0] == "scissor" || args[0] == "s") message.channel.send("It's a tie, let's try again!");
+        if (args[0] == "rock" || args[0] == "r") message.channel.send("Rock beats scissors, you win!")
+          .then(m => m.delete(5000));
+        if (args[0] == "paper" || args[0] == "p") message.channel.send("Scissors beat paper, I win!")
+          .then(m => m.delete(5000));
+        if (args[0] == "scissors" || args[0] == "scissor" || args[0] == "s") message.channel.send("It's a tie, let's try again!")
+          .then(m => m.delete(5000));
     }
 }
 
@@ -322,26 +307,27 @@ if (command === 'say') { // $say <message>
     message.delete(0);
 
     var msgcontent = message.content.slice(config.prefix.length + 3); // ignores the first 4 characters of the message
-    message.channel.send(msgcontent); // sends back everything else typed
+    message.channel.send(msgcontent).catch(console.error);
 }
 
 if (command === 'members') { // $members
     message.delete(0);
 
-    message.channel.send(`There are currently **${message.guild.memberCount}** members on this server.`);
+    message.channel.send("There are currently **"+ message.guild.memberCount +"** members on this server.").catch(console.error);
 }
 
 if (command === 'memberlist') { // $memberlist
     message.delete(0);
 
-    var modRole = message.guild.roles.find("name", "Mod");
+    var modRole = message.guild.roles.find("name", config.modRole); // to be extended
     var youtuberRole = message.guild.roles.find("name", "YouTuber");
     var streamerRole = message.guild.roles.find("name", "Streamer");
 
-    message.channel.send(`There are currently **${message.guild.memberCount}** members on this server:\n`+
-                          "**Mods**: "+modRole.members.keyArray().length+"\n"+
+    message.channel.send("There are currently **"+ message.guild.memberCount +"** members on this server:\n"+
+                          "**Moderators**: "+modRole.members.keyArray().length+"\n"+
                           "**YouTubers**: "+youtuberRole.members.keyArray().length+"\n"+
-                          "**Streaners**: "+streamerRole.members.keyArray().length);
+                          "**Streaners**: "+streamerRole.members.keyArray().length)
+      .catch(console.error);
     }
 
 if (command === 'purge') { // $purge <value> (max 100)
@@ -360,13 +346,14 @@ if (command === 'kick') { // $kick <@mention>
 
     var member = message.mentions.members.first();
     if (message.mentions.members.first() == null) { //aborts if no @mention
-        message.reply("no user mentionned.")
+        message.reply("no user mentionned.").then(m => m.delete(5000));
         return;
     }
+
     member.kick().then((member) => { //kicks member @mentionned
-    message.channel.send(`${member} has been kicked.`);
+    message.channel.send(member +" has been kicked.").then(m => m.delete(5000))
       }).catch(() => {
-    message.channel.send("An error has occured.");
+    message.channel.send("An error has occured.").then(m => m.delete(5000))
       });
 }
 
@@ -375,94 +362,107 @@ if (command === "ban") { // $ban <@mention>
 
     var member = message.mentions.members.first();
     if (message.mentions.members.first() == null) {
-        message.reply("no user mentionned.")
+        message.reply("no user mentionned.").then(m => m.delete(5000));
         return;
     }
+
     member.ban().then((member) => {
-    message.channel.send(`${member} has been banned.`);
+    message.channel.send(member +" has been banned.").then(m => m.delete(5000))
       }).catch(() => {
-    message.channel.send("An error has occured.");
+    message.channel.send("An error has occured.").then(m => m.delete(5000));
       });
 }
 
 if (command === 'mute') {
-    if (!message.member.roles.has(circle1.id) && !message.member.roles.has(circle2.id) && !message.member.roles.has(circle3.id) && !message.member.roles.has(cman.id) && !message.member.roles.has(mino.id)) {
-    var role = message.guild.roles.find("name", "Muted");
+    message.delete(0);
+
+    var role = message.guild.roles.find("name", config.muteRole);
     if (role == undefined || role == null) { // aborts if role doesn't exist
-        message.reply("this server doesn't have a \`Muted\` role.");
+        message.reply("this server doesn't have a \`"+ config.muteRole +"\` role.").then(m => m.delete(5000));
     }
 
     var userMute = message.guild.member(message.mentions.users.first());
     if (userMute == undefined || userMute == null) { // aborts if no one tagged
-        message.reply("no user was mentionned.")
+        message.reply("no user was mentionned.").then(m => m.delete(5000));
         return;
     }
-    if (userMute.roles.has(role.id)) return message.reply("this user is already muted."); // aborts if target already muted
+    if (userMute.roles.has(role.id)) return message.reply("this user is already muted.").then(m => m.delete(5000));
 
     userMute.addRole(role).then((userMute) => {
-    message.channel.send("User has been muted.");
-    }).catch(() => {
-    message.channel.send("An error has occured.");
+    message.channel.send("User has been muted.").then(m => m.delete(5000))
+      .catch(() => {
+    message.channel.send("An error has occured.").then(m => m.delete(5000))
+      })
     });
-}}
+}
 
 if (command === 'unmute') {
-    var role = message.guild.roles.find("name", "Muted");
+    message.delete(0);
+
+    var role = message.guild.roles.find("name", config.muteRole);
     if (role == undefined || role == null) { // aborts if role doesn't exist
-        message.reply("this server doesn't have a \`Muted\` role.");
+        message.reply("this server doesn't have a \`"+ config.muteRole +"\` role.").then(m => m.delete(5000));
         return;
     }
 
     var userUnmute = message.guild.member(message.mentions.users.first());
     if (userUnmute == undefined  || userUnmute == null) { // aborts if no one tagged
-        message.reply("no was user mentionned.")
+        message.reply("no was user mentionned.").then(m => m.delete(5000));
         return;
     }
-    if (!userUnmute.roles.has(role.id)) return message.reply("this user is not muted.");
+    if (!userUnmute.roles.has(role.id)) return message.reply("this user is not muted.").then(m => m.delete(5000));
 
-    userUnmute.removeRole(role).catch(console.error);
-    message.channel.send("User has been unmuted.");
+    userUnmute.removeRole(role).then((userUnmute) => {
+    message.channel.send("User has been unmuted.").then(m => m.delete(5000))
+      .catch(() => {
+    message.channel.send("An error has occured.").then(m => m.delete(5000))
+      })
+    });
 }
 
 // Poll Commands
 if (command === "poll") { // $poll <title> § <description>
     message.delete(0);
+
     var str = message.content.slice(config.prefix.length + 5).trim();
-    var arg = str.split("§");
+    var arg = str.split("|");
     var title = arg[0];
     var desc = arg[1];
 
     if (arg[1] == undefined) {
-        message.reply("an error has occured. Please execute `"+config.prefix+"poll <title> § <description>`.");
+        message.reply("an error has occured. Please execute `"+config.prefix+"poll <title> | <description>`.").then(m => m.delete(5000));
         return;
     }
 
     var embed = new Discord.RichEmbed()
-      .setColor(0x696799)
+      .setColor(config.embedColor)
       .setTitle(title)
       .setDescription(desc)
-      .setTimestamp() // By default today's date.
+      .setTimestamp()
 
     message.channel.send({embed})
         .then(function(msg) {
             msg.react("👍");
             msg.react("👎");
-        });
+        }).catch(console.error);
 }
 
 if (command === "epoll") { // $epoll <title> § <descrition> § <choice A> § <choice B> § etc. up to 5
     message.delete(0);
+
     var str = message.content.slice(config.prefix.length + 6).trim();
-    var arg = str.split("§");
+    var arg = str.split("|");
 
     if (arg[1] == undefined || arg[2] == undefined || arg[3] == undefined) {
-        message.reply("an error has occured. Please excute `"+config.prefix+"epoll <title> § <description> § <choice 1> § <choice 2>`");
+        message.reply("an error has occured. Please excute `"+config.prefix+"epoll <title> | <description> | <choice 1> | <choice 2>`")
+          .then(m => m.delete(5000))
+          .catch(console.error);
         return;
     }
 
     if (arg[4] == undefined) {
         var embed = new Discord.RichEmbed()
-          .setColor(0x696799)
+          .setColor(config.embedColor)
           .setTitle(arg[0])
           .setDescription(arg[1]+"\n\n"+
                           ":regional_indicator_a: "+arg[2]+"\n"+
@@ -473,52 +473,52 @@ if (command === "epoll") { // $epoll <title> § <descrition> § <choice A> § <c
               .then(function(msg) {
                   msg.react("🇦");
                   msg.react("🇧");
-              });
+              }).catch(console.error);
           return;
     }
 
     if (arg[5] == undefined) {
         var embed = new Discord.RichEmbed()
-          .setColor(0x696799)
+          .setColor(config.embedColor)
           .setTitle(arg[0])
           .setDescription(arg[1]+"\n\n"+
                           ":regional_indicator_a: "+arg[2]+"\n"+
                           ":regional_indicator_b: "+arg[3]+"\n"+
                           ":regional_indicator_c: "+arg[4])
-          .setTimestamp() // By default today's date.
+          .setTimestamp()
 
           message.channel.send({embed})
               .then(function(msg) {
                   msg.react("🇦");
                   msg.react("🇧");
                   msg.react("🇨");
-              });
+              }).catch(console.error);
           return;
     }
 
     if (arg[6] == undefined) {
-      var embed = new Discord.RichEmbed()
-        .setColor(0x696799)
-        .setTitle(arg[0])
-        .setDescription(arg[1]+"\n\n"+
-                        ":regional_indicator_a: "+arg[2]+"\n"+
-                        ":regional_indicator_b: "+arg[3]+"\n"+
-                        ":regional_indicator_c: "+arg[4]+"\n"+
-                        ":regional_indicator_d: "+arg[5])
-        .setTimestamp() // By default today's date.
+        var embed = new Discord.RichEmbed()
+          .setColor(config.embedColor)
+          .setTitle(arg[0])
+          .setDescription(arg[1]+"\n\n"+
+                          ":regional_indicator_a: "+arg[2]+"\n"+
+                          ":regional_indicator_b: "+arg[3]+"\n"+
+                          ":regional_indicator_c: "+arg[4]+"\n"+
+                          ":regional_indicator_d: "+arg[5])
+          .setTimestamp()
 
-        message.channel.send({embed})
-            .then(function(msg) {
-                msg.react("🇦");
-                msg.react("🇧");
-                msg.react("🇨");
-                msg.react("🇩");
-            });
-        return;
+          message.channel.send({embed})
+              .then(function(msg) {
+                  msg.react("🇦");
+                  msg.react("🇧");
+                  msg.react("🇨");
+                  msg.react("🇩");
+              }).catch(console.error);
+          return;
     }
 
     var embed = new Discord.RichEmbed()
-      .setColor(0x696799)
+      .setColor(config.embedColor)
       .setTitle(arg[0])
       .setDescription(arg[1]+"\n\n"+
                       ":regional_indicator_a: "+arg[2]+"\n"+
@@ -526,7 +526,7 @@ if (command === "epoll") { // $epoll <title> § <descrition> § <choice A> § <c
                       ":regional_indicator_c: "+arg[4]+"\n"+
                       ":regional_indicator_d: "+arg[5]+"\n"+
                       ":regional_indicator_e: "+arg[6])
-      .setTimestamp() // By default today's date.
+      .setTimestamp()
 
       message.channel.send({embed})
           .then(function(msg) {
@@ -535,7 +535,7 @@ if (command === "epoll") { // $epoll <title> § <descrition> § <choice A> § <c
               msg.react("🇨");
               msg.react("🇩");
               msg.react("🇪");
-          });
+          }).catch(console.error);
       return;
 } // End Poll Commands
 
@@ -548,15 +548,17 @@ if (message.author.id !== config.ownerID) { // Owner Commands
 if (command === 'uptime') {
     message.delete(0);
 
-    var date = new Date(new Date() - client.readyAt);
-    var embed = new Discord.RichEmbed()
-        .setColor(config.embedColor)
-        .setTitle("Uptime")
-        .setDescription(`I have been online for ${Math.floor(date.getTime() / 86400000)} days, ${date.getHours()} hours and ${date.getMinutes()} minutes.`)
-        .setFooter(new Date());
+    var days = Math.floor(process.uptime() / 86400);
+    var hours = Math.floor((process.uptime() % 86400) / 3600);
+    var minutes = Math.floor(((process.uptime() % 86400) % 3600) / 60);
 
-    message.channel.send({embed})
-        .catch(console.log());
+    if (days === 0 && hours === 0 && minutes !== 0) {
+        message.channel.send("I have been online for "+ minutes +" minute(s).");
+    } else if (days === 0 && hours !== 0) {
+        message.channel.send("I have been online for "+ hours +" hour(s) and "+ minutes +" minute(s).");
+    } else {
+        message.channel.send("I have been online for "+ days +" day(s), "+ hours +" hour(s) and "+ minutes +" minute(s).");
+    }
 }
 
 if (command === 'serverinfo') {
@@ -572,13 +574,11 @@ if (command === 'serverinfo') {
         .addField("Region:", guild.region)
         .addField("Verification Level:", getVerification(guild))
         .addField("Member Count:", guild.memberCount)
-        .addField("Member Status:", getStatus(guild))
         .addField("Channels:", getChannels(guild))
-        .addField("Custom Emojis:", getEmoji(guild))
         .setFooter(new Date())
 
     message.channel.send({embed})
-      .catch(console.log());
+      .catch(console.error);
 
     function getDate(date) {
     var mins = date.getUTCMinutes();
@@ -597,54 +597,28 @@ if (command === 'serverinfo') {
     var verificationLevel = "";
     switch (guild.verificationLevel) {
       case 0: {
-          verificationLevel = "None: Unrestricted"
+          verificationLevel = "None: Unrestricted."
           break;
       }
       case 1: {
-          verificationLevel = "Low: Users must have a verified email on their Discord account"
+          verificationLevel = "Low: Users must have a verified email on their Discord account."
           break;
       }
       case 2: {
-          verificationLevel = "Medium: Users must have a verified email on their Discord account and be registered on Discord for longer than 5 minutes"
+          verificationLevel = "Medium: Users must have a verified email on their Discord account and be registered on Discord for longer than 5 minutes."
           break;
       }
       case 3: {
-          verificationLevel = "High: Users must have a verified email on their Discord account and be registered on Discord for longer than 5 minutes. Users must also be a member of the server for longer than 10 minutes"
+          verificationLevel = "High: Users must have a verified email on their Discord account and be registered on Discord for longer than 5 minutes. Users must also be a member of the server for longer than 10 minutes."
           break;
       }
       case 4: {
-          verificationLevel = "Extreme: Users must have a verified phone on their Discord account"
+          verificationLevel = "Extreme: Users must have a verified phone on their Discord account."
           break;
       }
     }
     return verificationLevel;
     }
-
-    function getStatus(guild) {
-    var status = guild.presences.array();
-    var online = 0;
-    var idle = 0;
-    var dnd = 0;
-
-    for (var i = 0; i < status.length; i++) {
-         switch (status[i].status) {
-             case "online": {
-               online++;
-               break;
-             }
-             case "idle": {
-               idle++;
-               break;
-             }
-             case "dnd": {
-               dnd++;
-               break;
-             }
-        }
-  }
-
-  return `${online} online, ${idle} idle, ${dnd} do not disturb, ${guild.memberCount - (online + idle + dnd)} offline`;
-  }
 
   function getChannels(guild) {
   var channels = guild.channels.array();
@@ -660,8 +634,15 @@ if (command === 'serverinfo') {
     }
   }
 
-  return `${text} text channels, ${voice} voice channels`;
+  return ""+ text +" text channels and "+ voice +" voice channels";
   }
+}
+
+if (command === 'version') {
+    message.delete(0);
+
+    message.channel.send("I am currently on version **"+ package.version +"**.").catch(console.error);
+
 }
 
 // Bot Cosmetic Commands
@@ -669,29 +650,33 @@ if (command === 'setgame') {
     message.delete(0);
 
     msgcontent = message.content.slice(config.prefix.length+7);
-    client.user.setPresence({game:{name:''+msgcontent+'', type:0}});
+    client.user.setPresence({game:{name:''+msgcontent+'', type:0}}).catch(console.error);
+    console.log("Game set to "+ msgcontent +".");
 }
 
 if (command === 'setstatus') {
     message.delete(0);
 
-    msgcontent = message.content.slice(config.prefix.length+9);
-    client.user.setStatus(msgcontent);  //online, idle, dnd, invisible
+    msgcontent = message.content.slice(config.prefix.length+10);
+    client.user.setStatus(msgcontent).catch(console.error);  //online, idle, dnd, invisible
+    console.log("Status set to "+ msgcontent +".");
 }
 
-if (command ==='setnickname') {
+if (command === 'setnickname') {
     message.delete(0);
 
     msgcontent = message.content.substring(config.prefix.length+11);
-    message.guild.member(client.user).setNickname(msgcontent);
+    message.guild.member(client.user).setNickname(msgcontent).catch(console.error);
+    console.log("Nickname set to "+ msgcontent +".");
 }
 
 if (command === 'reset') {
     message.delete(0);
 
-    client.user.setPresence({game:{name:'$help', type:0}});
-    client.user.setStatus('online');
+    client.user.setPresence({game:{name:config.prefix + "help", type:0}});
+    client.user.setStatus("online");
     message.guild.member(client.user).setNickname('');
+    console.log("Bot cosmetics were reset.");
 } // End Bot Cosmetic Commands
 
 } // End Owner commands
@@ -703,7 +688,7 @@ if (command === 'reset') {
 if (message.author.id === config.ownerID) {
     if (command === '!stop') { // STOP THE BOT
         console.log(client.user.username + " has been deactivated.");
-        process.exit(0);
+        process.exit(1);
     }
 }
 
