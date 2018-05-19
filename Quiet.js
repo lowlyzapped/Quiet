@@ -68,6 +68,8 @@ client.on('guildMemberAdd', member => { // when a member joins the server
                .setFooter(new Date())
 
            member.send("Hello "+member.user.username+"! "+ welcomeText);
+
+           if (!fs.existsSync(rulesTextPath)) return;
            member.send({embed})
                .catch(console.error);
            });
