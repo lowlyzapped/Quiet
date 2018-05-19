@@ -4,10 +4,11 @@ const client = new Discord.Client();
 
 var config = require('./config.json');
 var package = require('./package.json')
-var rulesTextPath = "./texts/rules.md";
-// var welcomeTextPath = "./texts/welcome.md";
 
-var helpBTextPath = "./texts/help/helpBasic.md"; // TODO make this into a seperate .js file
+var rulesTextPath = "./texts/rules.md";
+var welcomeTextPath = "./texts/welcome.md";
+
+var helpBTextPath = "./texts/help/helpBasic.md"; // TODO make this into a seperate .js file ???
 var helpBCTextPath = "./texts/help/helpBotCosmetic.md";
 var helpMTextPath = "./texts/help/helpMod.md";
 var helpOTextPath = "./texts/help/helpOwner.md";
@@ -25,9 +26,9 @@ if (!fs.existsSync(helpBTextPath)) {
     console.log("The file " + helpBTextPath + " does not exist. This may cause errors.");
 }
 
-// if (!fs.existsSync(welcomeTextPath)) {
-//     console.log("The file " + welcomeTextPath + " does not exist. This may cause errors.");
-// }
+if (!fs.existsSync(welcomeTextPath)) {
+    console.log("The file " + welcomeTextPath + " does not exist. This may cause errors.");
+}
 
 if (!fs.existsSync(rulesTextPath)) {
     console.log("The file " + rulesTextPath + " does not exist. This may cause errors.");
@@ -48,10 +49,30 @@ client.on('guildMemberAdd', member => { // when a member joins the server
            var embed = new Discord.RichEmbed()
              .setColor(0x18bb68)
              .setAuthor(client.user.username, client.user.avatarURL)
-             .setDescription(""+member+" joined the server.")
+             .setDescription(""+member.user+" joined the server.")
              .setTimestamp()
            channel.send({embed}).catch(console.error);
-          });
+
+           if (!fs.existsSync(welcomeTextPath)) return;
+
+           fs.readFile(welcomeTextPath, 'utf8', (err, welcomeText) => {
+               if (err) return console.log(err);
+
+           fs.readFile(rulesTextPath, 'utf8', (err, rulesText) => {
+               if (err) return console.log(err);
+
+           var embed = new Discord.RichEmbed()
+               .setColor(config.embedColor)
+               .setAuthor(member.guild.name+" Rules", member.guild.iconURL)
+               .setDescription(rulesText)
+               .setFooter(new Date())
+
+           member.send("Hello "+member.user.username+"! "+ welcomeText);
+           member.send({embed})
+               .catch(console.error);
+           });
+           });
+});
 
 client.on('guildMemberRemove', member => {
            var channel = member.guild.channels.find('name', config.logChannel);
@@ -63,7 +84,7 @@ client.on('guildMemberRemove', member => {
              .setDescription("**"+member.user.username+"#"+member.user.discriminator+"** left the server.")
              .setTimestamp()
            channel.send({embed}).catch(console.error);
-         });
+});
 
 client.on('message', message => {  // message function
 
@@ -173,17 +194,15 @@ if (command === 'help') {
 
 if (command === "rules" || command === "rule") {
     message.delete(5000);
-    fs.readFile(rulesTextPath, 'utf8', (err, data) => {
-        if (err) {
-            console.log(err);
-            return;
-        }
+    if (!fs.existsSync(rulesTextPath)) return;
+
+    fs.readFile(rulesTextPath, 'utf8', (err, rulesText) => {
+        if (err) return console.log(err);
 
     var embed = new Discord.RichEmbed()
         .setColor(config.embedColor)
-        .setAuthor(client.user.username, client.user.avatarURL)
-        .setTitle("Rules")
-        .setDescription(data)
+        .setAuthor(message.guild.name+" Rules", message.guild.iconURL)
+        .setDescription(rulesText)
         .setFooter(new Date())
 
     message.reply('rules have been sent.')
