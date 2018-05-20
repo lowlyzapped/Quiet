@@ -5,14 +5,16 @@ const client = new Discord.Client();
 var config = require('./config.json');
 var package = require('./package.json')
 
-var rulesTextPath = "./texts/rules.md";
-var welcomeTextPath = "./texts/welcome.md";
+var rulesTextPath = "./files/rules.md";
+var welcomeTextPath = "./files/welcome.md";
+var linksPath = "./files/links.json";
+var linksConfig = null;
 
-var helpBTextPath = "./texts/help/helpBasic.md"; // TODO make this into a seperate .js file ???
-var helpBCTextPath = "./texts/help/helpBotCosmetic.md";
-var helpMTextPath = "./texts/help/helpMod.md";
-var helpOTextPath = "./texts/help/helpOwner.md";
-var helpPTextPath = "./texts/help/helpPoll.md";
+var helpBTextPath = "./files/help/helpBasic.md"; // TODO make this into a seperate file ???
+var helpBCTextPath = "./files/help/helpBotCosmetic.md";
+var helpMTextPath = "./files/help/helpMod.md";
+var helpOTextPath = "./files/help/helpOwner.md";
+var helpPTextPath = "./files/help/helpPoll.md";
 
 var https = require('https');
 var http = require('http');
@@ -32,6 +34,18 @@ if (!fs.existsSync(welcomeTextPath)) {
 
 if (!fs.existsSync(rulesTextPath)) {
     console.log("The file " + rulesTextPath + " does not exist. This may cause errors.");
+}
+
+if (fs.existsSync(linksPath)) {
+    fs.readFile(linksPath, 'utf8', (e, data) => {
+        try {
+            linksConfig = JSON.parse(data);
+        } catch (e) {
+            console.log(e);
+        }
+    });
+} else {
+    console.log("The file " + linksPath + " does not exist. This may cause errors.");
 }
 
 client.on('ready', () => {
@@ -116,82 +130,43 @@ if (command === 'help') {
     message.delete(5000); // deletes the user's message after ~5 seconds
     message.reply("help has been sent.").then(m => m.delete(5000));
 
-    if (!message.member.roles.has(modRole.id) && message.author.id !== config.ownerID) {
-        fs.readFile(helpBTextPath, 'utf8', (err, helpBasic) => {
-            if (err) return console.log(err);
+    fs.readFile(helpBTextPath, 'utf8', (err, helpBasic) => {
+        if (err) return console.log(err);
 
-        var embed = new Discord.RichEmbed()
-          .setColor(config.embedColor)
-          .setTitle(client.user.username)
-          .setDescription("A complete list of the available commands.")
-          .setThumbnail(client.user.avatarURL)
-          .addField("Basic Commands:", helpBasic, true)
-          .setFooter("For additional help, contact TheV0rtex#4553")
-          // .setTimestamp() // By default today's date.
-        message.author.send({embed}).catch(console.error);
-        return;
+    fs.readFile(helpMTextPath, 'utf8', (err, helpMod) => {
+        if (err) return console.log(err);
 
-        });
-    }
+    fs.readFile(helpPTextPath, 'utf8', (err, helpPoll) => {
+        if (err) return console.log(err);
 
-    else if (message.member.roles.has(modRole.id) && message.author.id !== config.ownerID) {
-        fs.readFile(helpBTextPath, 'utf8', (err, helpBasic) => {
-            if (err) return console.log(err);
+    fs.readFile(helpBCTextPath, 'utf8', (err, helpBotCosmetic) => {
+        if (err) return console.log(err);
 
-        fs.readFile(helpMTextPath, 'utf8', (err, helpMod) => {
-            if (err) return console.log(err);
+    fs.readFile(helpOTextPath, 'utf8', (err, helpOwner) => {
+        if (err) return console.log(err);
 
-        fs.readFile(helpPTextPath, 'utf8', (err, helpPoll) => {
-            if (err) return console.log(err);
+    var embed = new Discord.RichEmbed()
+      .setColor(config.embedColor)
+      .setTitle(client.user.username)
+      .setDescription("A complete list of the available commands.")
+      .setThumbnail(client.user.avatarURL)
+      .addField("Basic Commands:", helpBasic, true)
+      .setFooter("For additional help, contact TheV0rtex#4553")
+      // .setTimestamp() // By default today's date.
 
-        var embed = new Discord.RichEmbed()
-          .setColor(config.embedColor)
-          .setTitle(client.user.username)
-          .setDescription("A complete list of the available commands.")
-          .setThumbnail(client.user.avatarURL)
-          .addField("Basic Commands:", helpBasic, true)
-          .addField("Moderator Commands:", helpMod, true)
-          .addField("Poll Commands:", helpPoll, true)
-          .setFooter("For additional help, contact TheV0rtex#4553")
-        // .setTimestamp() // By default today's date.
-        message.author.send({embed}).catch(console.error);
-        return;
+      if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID) {
+          embed.addField("Moderator Commands:", helpMod, true);
+          embed.addField("Poll Commands:", helpPoll, true);
+      }
 
-        }); }); });
-    }
+      if (message.author.id === config.ownerID) {
+          embed.addField("Bot Cosmetic Commands:", helpBotCosmetic, true)
+          embed.addField("Owner Commands:", helpOwner, true)
+      }
 
-    else {
-        fs.readFile(helpBTextPath, 'utf8', (err, helpBasic) => {
-            if (err) return console.log(err);
+    message.author.send({embed}).catch(console.error);
 
-        fs.readFile(helpMTextPath, 'utf8', (err, helpMod) => {
-            if (err) return console.log(err);
-
-        fs.readFile(helpPTextPath, 'utf8', (err, helpPoll) => {
-            if (err) return console.log(err);
-
-        fs.readFile(helpBCTextPath, 'utf8', (err, helpBotCosmetic) => {
-            if (err) return console.log(err);
-
-        fs.readFile(helpOTextPath, 'utf8', (err, helpOwner) => {
-            if (err) return console.log(err);
-
-        var embed = new Discord.RichEmbed()
-          .setColor(config.embedColor)
-          .setTitle(client.user.username)
-          .setDescription("A complete list of the available commands.")
-          .setThumbnail(client.user.avatarURL)
-          .addField("Basic Commands:", helpBasic, true)
-          .addField("Moderator Commands:", helpMod, true)
-          .addField("Poll Commands:", helpPoll, true)
-          .addField("Bot Cosmetic Commands:", helpBotCosmetic, true)
-          .addField("Owner Commands:", helpOwner, true)
-          .setFooter("For additional help, contact TheV0rtex#4553")
-          // .setTimestamp() // By default today's date.
-        message.author.send({embed}).catch(console.error);
-
-        }); }); }); }); });
-    }
+    }); }); }); }); });
 }
 
 if (command === "rules" || command === "rule") {
@@ -250,6 +225,49 @@ if (command === 'avatar') {
       .catch(console.error);
 }
 
+if (command === 'link') {
+    message.delete(0);
+
+    var links = linksConfig.links;
+
+    if (args[0] == null) {
+        var embed = new Discord.RichEmbed()
+          .setColor(config.embedColor)
+          .setTitle("All Links")
+          .setFooter(new Date())
+
+        var text = "";
+        for (var i = 0; i < links.length; i++) {
+            text += "`" + links[i].name + "` - " + links[i].description + "\n";
+        }
+          embed.setDescription(text);
+
+          message.channel.send({embed}).catch(console.error);
+          return;
+    }
+
+    var x = null;
+    for (var i = 0; i < links.length; i++) {
+         if (links[i].name.toLowerCase() == args[0].toLowerCase())
+         x = i;
+    }
+
+    if (x == null) {
+        var linkName = args[0].toLowerCase();
+        message.reply("the link `"+ linkName +"` doesn't exist.");
+        return;
+    }
+
+    var embed = new Discord.RichEmbed()
+        .setColor(config.embedColor)
+        .setAuthor("Link: "+ links[x].name.toLowerCase())
+        .setTitle(links[x].link)
+        .setDescription(links[x].description)
+        .setFooter(new Date())
+
+        message.channel.send({embed}).catch(console.error);
+}
+
 if (command === 'coin') { // flip a coin
   message.delete(0);
   var flip = Math.floor(Math.random() * 2 + 1);
@@ -292,7 +310,7 @@ if (command === 'rps') { // rock paper scissor
     var rps = Math.floor(Math.random() * 3 + 1);
     // rps: rock is 1, paper is 2 and scissors is 3
     if (rps === 1) {
-        message.channel.send("Rock!");
+        message.channel.send("Rock!").then(m => m.delete(5000));
         if (args[0] == "rock" || args[0] == "r") message.channel.send("It's a tie, let's try again!")
           .then(m => m.delete(5000));
         if (args[0] == "paper" || args[0] == "p") message.channel.send("Paper beats rock, you win!")
@@ -301,7 +319,7 @@ if (command === 'rps') { // rock paper scissor
           .then(m => m.delete(5000));
     }
     if (rps === 2) {
-        message.channel.send("Paper!");
+        message.channel.send("Paper!").then(m => m.delete(5000));
         if (args[0] == "rock" || args[0] == "r") message.channel.send("Paper beats rock, I win!")
           .then(m => m.delete(5000));
         if (args[0] == "paper" || args[0] == "p") message.channel.send("It's a tie, let's try again!")
@@ -310,7 +328,7 @@ if (command === 'rps') { // rock paper scissor
           .then(m => m.delete(5000));
     }
     if (rps === 3) {
-        message.channel.send("Scissors!");
+        message.channel.send("Scissors!").then(m => m.delete(5000));
         if (args[0] == "rock" || args[0] == "r") message.channel.send("Rock beats scissors, you win!")
           .then(m => m.delete(5000));
         if (args[0] == "paper" || args[0] == "p") message.channel.send("Scissors beat paper, I win!")
@@ -320,9 +338,7 @@ if (command === 'rps') { // rock paper scissor
     }
 }
 
-if (!message.member.roles.has(modRole.id) && message.author.id !== config.ownerID) { // Mod Commands
-    return;
-} else {
+if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID) { // Mod Commands
 
 if (command === 'say') { // $say <message>
     message.delete(0);
@@ -562,9 +578,7 @@ if (command === "epoll") { // $epoll <title> § <descrition> § <choice A> § <c
 
 } // End Mod Commands
 
-if (message.author.id !== config.ownerID) { // Owner Commands
-    return;
-} else {
+if (message.author.id === config.ownerID) { // Owner Commands
 
 if (command === 'uptime') {
     message.delete(0);
@@ -574,11 +588,11 @@ if (command === 'uptime') {
     var minutes = Math.floor(((process.uptime() % 86400) % 3600) / 60);
 
     if (days === 0 && hours === 0 && minutes !== 0) {
-        message.channel.send("I have been online for "+ minutes +" minute(s).");
+        message.channel.send("I have been online for **"+ minutes +"** minute(s).");
     } else if (days === 0 && hours !== 0) {
-        message.channel.send("I have been online for "+ hours +" hour(s) and "+ minutes +" minute(s).");
+        message.channel.send("I have been online for **"+ hours +"** hour(s) and **"+ minutes +"** minute(s).");
     } else {
-        message.channel.send("I have been online for "+ days +" day(s), "+ hours +" hour(s) and "+ minutes +" minute(s).");
+        message.channel.send("I have been online for **"+ days +"** day(s), **"+ hours +"** hour(s) and **"+ minutes +"** minute(s).");
     }
 }
 
