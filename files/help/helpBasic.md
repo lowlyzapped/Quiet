@@ -3,6 +3,6 @@
 `$avatar` - Sends the user his own avatar.
 `$coin` - Flips a coin.
 `$joined` - Displays for how long the user has been on the server.
-`$link <link-name>` - Sends the requested link. Will display all loaded links if none is specified.
+`$link <link-name>` - Sends the requested link. Will display all available links if none is specified.
 `$roll <n> <f>` - Roll n f-sided dice, sums the result.
 `$rps <rock/paper/scissors>` - Play rock-paper-scissors with the bot.
