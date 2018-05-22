@@ -6,3 +6,4 @@
 `$link <link-name>` - Sends the requested link. Will display all available links if none is specified.
 `$roll <n> <f>` - Roll n f-sided dice, sums the result.
 `$rps <rock/paper/scissors>` - Play rock-paper-scissors with the bot.
+`$servericon` - Sends the server's icon.

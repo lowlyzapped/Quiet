@@ -214,6 +214,7 @@ if (command === 'joined') {
 
 if (command === 'avatar') {
     message.delete(5000);
+
     var embed = new Discord.RichEmbed()
         .setColor(0x696799)
         .setDescription('[Direct Link](' + message.author.avatarURL + ')')
@@ -221,6 +222,20 @@ if (command === 'avatar') {
         .setFooter('Powered by '+client.user.username+'™')
 
     message.reply('your avatar:');
+    message.channel.send({embed})
+      .catch(console.error);
+}
+
+if (command === 'servericon') {
+    message.delete(5000);
+
+    var embed = new Discord.RichEmbed()
+      .setColor(config.embedColor)
+      .setTitle(message.guild.name+"'s icon!")
+      .setDescription("[Direct Link]("+message.guild.iconURL+")")
+      .setImage(message.guild.iconURL)
+      .setFooter("Powered by "+client.user.username+"™")
+
     message.channel.send({embed})
       .catch(console.error);
 }
@@ -365,7 +380,24 @@ if (command === 'memberlist') { // $memberlist
                           "**YouTubers**: "+youtuberRole.members.keyArray().length+"\n"+
                           "**Streaners**: "+streamerRole.members.keyArray().length)
       .catch(console.error);
-    }
+}
+
+if (command === 'getavatar') {
+    message.delete(0);
+
+    var member = message.mentions.members.first();
+    if (message.mentions.members.first() == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
+
+    var embed = new Discord.RichEmbed()
+      .setColor(config.embedColor)
+      .setTitle(member.user.username +"'s avatar!")
+      .setDescription("[Direct Link]("+ member.user.avatarURL +")")
+      .setImage(member.user.avatarURL)
+      .setFooter("Powered by "+ client.user.username +"™")
+
+    message.channel.send({embed})
+      .catch(console.error);
+}
 
 if (command === 'purge') { // $purge <value> (max 100)
     var messageCount = parseInt(args[0]);

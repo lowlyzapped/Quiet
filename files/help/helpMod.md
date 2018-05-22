@@ -1,4 +1,5 @@
 `$ban <@mention>` - Bans the targeted user from the server.
+`$getavatar` - Sends the targeted user's avatar.
 `$kick <@mention>` - Kicks the targeted user from the server.
 `$members` - Sends the number of members on the server.
 `$memberlist` - Sends a list of members on the server with set roles.
