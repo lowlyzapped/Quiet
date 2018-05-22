@@ -343,7 +343,7 @@ if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID
 if (command === 'say') { // $say <message>
     message.delete(0);
 
-    var msgcontent = message.content.slice(config.prefix.length + 3); // ignores the first 4 characters of the message
+    var msgcontent = message.content.slice(config.prefix.length + 4); // ignores the first 4 characters of the message
     message.channel.send(msgcontent).catch(console.error);
 }
 
@@ -382,10 +382,9 @@ if (command === 'kick') { // $kick <@mention>
     message.delete(0);
 
     var member = message.mentions.members.first();
-    if (message.mentions.members.first() == null) { //aborts if no @mention
-        message.reply("no user mentionned.").then(m => m.delete(5000));
-        return;
-    }
+    if (message.mentions.members.first() == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
+
+    if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID || userMute.id === client.id) return message.reply("I am not allowed to kick this user.").then(m => m.delete(5000));
 
     member.kick().then((member) => { //kicks member @mentionned
     message.channel.send(member +" has been kicked.").then(m => m.delete(5000))
@@ -398,10 +397,9 @@ if (command === "ban") { // $ban <@mention>
     message.delete(0);
 
     var member = message.mentions.members.first();
-    if (message.mentions.members.first() == null) {
-        message.reply("no user mentionned.").then(m => m.delete(5000));
-        return;
-    }
+    if (message.mentions.members.first() == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
+
+    if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID || userMute.id === client.id) return message.reply("I am not allowed to ban this user.").then(m => m.delete(5000));
 
     member.ban().then((member) => {
     message.channel.send(member +" has been banned.").then(m => m.delete(5000))
@@ -414,15 +412,12 @@ if (command === 'mute') {
     message.delete(0);
 
     var role = message.guild.roles.find("name", config.muteRole);
-    if (role == undefined || role == null) { // aborts if role doesn't exist
-        message.reply("this server doesn't have a \`"+ config.muteRole +"\` role.").then(m => m.delete(5000));
-    }
+    if (role == undefined || role == null) message.reply("this server doesn't have a \`"+ config.muteRole +"\` role.").then(m => m.delete(5000));
 
     var userMute = message.guild.member(message.mentions.users.first());
-    if (userMute == undefined || userMute == null) { // aborts if no one tagged
-        message.reply("no user was mentionned.").then(m => m.delete(5000));
-        return;
-    }
+    if (userMute == undefined || userMute == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
+
+    if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID || userMute.id === client.id) return message.reply("I am not allowed to mute this user.").then(m => m.delete(5000));
     if (userMute.roles.has(role.id)) return message.reply("this user is already muted.").then(m => m.delete(5000));
 
     userMute.addRole(role).then((userMute) => {
@@ -443,10 +438,8 @@ if (command === 'unmute') {
     }
 
     var userUnmute = message.guild.member(message.mentions.users.first());
-    if (userUnmute == undefined  || userUnmute == null) { // aborts if no one tagged
-        message.reply("no was user mentionned.").then(m => m.delete(5000));
-        return;
-    }
+    if (userUnmute == undefined  || userUnmute == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
+
     if (!userUnmute.roles.has(role.id)) return message.reply("this user is not muted.").then(m => m.delete(5000));
 
     userUnmute.removeRole(role).then((userUnmute) => {
@@ -587,12 +580,23 @@ if (command === 'uptime') {
     var hours = Math.floor((process.uptime() % 86400) / 3600);
     var minutes = Math.floor(((process.uptime() % 86400) % 3600) / 60);
 
-    if (days === 0 && hours === 0 && minutes !== 0) {
-        message.channel.send("I have been online for **"+ minutes +"** minute(s).");
+    var textDays = "days";
+    var textHours = "hours";
+    var textMinutes = "minutes";
+
+    if (days === 1) textDays = "day";
+    if (hours === 1) textHours = "hour";
+    if (minutes === 1) textMinutes = "minute";
+
+
+    if (days === 0 && hours === 0 && minutes === 0) {
+        message.channel.send("I just have been launched. Give me a minute to get ready.");
+    } else if (days === 0 && hours === 0 && minutes !== 0) {
+        message.channel.send("I have been online for **"+ minutes +"** "+textMinutes+".");
     } else if (days === 0 && hours !== 0) {
-        message.channel.send("I have been online for **"+ hours +"** hour(s) and **"+ minutes +"** minute(s).");
+        message.channel.send("I have been online for **"+ hours +"** "+textHours+" and **"+ minutes +"** "+textMinutes+".");
     } else {
-        message.channel.send("I have been online for **"+ days +"** day(s), **"+ hours +"** hour(s) and **"+ minutes +"** minute(s).");
+        message.channel.send("I have been online for **"+ days +"** "+textDays+", **"+ hours +"** "+textHours+" and **"+ minutes +"** "+textMinutes+".");
     }
 }
 
