@@ -449,7 +449,7 @@ if (command === 'mute') {
     var userMute = message.guild.member(message.mentions.users.first());
     if (userMute == undefined || userMute == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
 
-    if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID || userMute.id === client.id) return message.reply("I am not allowed to mute this user.").then(m => m.delete(5000));
+    if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID) return message.reply("I am not allowed to mute this user.").then(m => m.delete(5000));
     if (userMute.roles.has(role.id)) return message.reply("this user is already muted.").then(m => m.delete(5000));
 
     userMute.addRole(role).then((userMute) => {
@@ -458,6 +458,16 @@ if (command === 'mute') {
     message.channel.send("An error has occured.").then(m => m.delete(5000))
       })
     });
+
+    var channel = message.guild.channels.find('name', config.logChannel); //searches for a channel
+    if (!channel) return;  // if channel not found, abort
+
+    var embed = new Discord.RichEmbed()
+      .setColor(0x696969)
+      .setAuthor(client.user.username, client.user.avatarURL)
+      .setDescription(""+userMute+" was muted by "+message.author)
+      .setTimestamp()
+    channel.send({embed}).catch(console.error);
 }
 
 if (command === 'unmute') {
@@ -480,6 +490,16 @@ if (command === 'unmute') {
     message.channel.send("An error has occured.").then(m => m.delete(5000))
       })
     });
+
+    var channel = message.guild.channels.find('name', config.logChannel); //searches for a channel named #member-log
+    if (!channel) return;  // if channel not found, abort
+
+    var embed = new Discord.RichEmbed()
+      .setColor(0x696969)
+      .setAuthor(client.user.username, client.user.avatarURL)
+      .setDescription(""+userUnmute+" was unmuted by "+message.author)
+      .setTimestamp()
+    channel.send({embed}).catch(console.error);
 }
 
 // Poll Commands
