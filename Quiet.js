@@ -5,6 +5,11 @@ const client = new Discord.Client();
 var config = require('./config.json');
 var package = require('./package.json')
 
+if (config.token == '' || config.prefix == '') {
+    console.log('Please fill in config.json');
+    process.exit(1);
+}
+
 var rulesTextPath = "./files/rules.md";
 var welcomeTextPath = "./files/welcome.md";
 var linksPath = "./files/links.json";
@@ -18,11 +23,6 @@ var helpPTextPath = "./files/help/helpPoll.md";
 
 var https = require('https');
 var http = require('http');
-
-if (config.token == '' || config.prefix == '') {
-    console.log('Please fill in config.json');
-    process.exit(1);
-}
 
 if (!fs.existsSync(helpBTextPath)) {
     console.log("The file " + helpBTextPath + " does not exist. This may cause errors.");
@@ -113,7 +113,7 @@ if (message.author.bot) return; // ignores bots
 
 var modRole = message.guild.roles.find("name", config.modRole);
 if (message.content.includes("discord.gg/")) {
-    if (!message.member.roles.has(modRole.id)) message.delete(0);
+    if (!message.member.roles.has(modRole.id) && message.author.id !== ownerID) return message.delete(0);
 }
 
 if (!message.content.startsWith(config.prefix)) return; // if message doesn't start with $ abort
@@ -169,7 +169,7 @@ if (command === 'help') {
     }); }); }); }); });
 }
 
-if (command === "rules" || command === "rule") {
+if (command === "rules") {
     message.delete(5000);
     if (!fs.existsSync(rulesTextPath)) return;
 
@@ -619,7 +619,8 @@ if (command === "epoll") { // $epoll <title> § <descrition> § <choice A> § <c
               msg.react("🇪");
           }).catch(console.error);
       return;
-} // End Poll Commands
+}
+// End Poll Commands
 
 } // End Mod Commands
 
@@ -768,13 +769,10 @@ if (command === 'reset') {
     client.user.setStatus("online");
     message.guild.member(client.user).setNickname('');
     console.log("Bot cosmetics were reset.");
-} // End Bot Cosmetic Commands
+}
+// End Bot Cosmetic Commands
 
 } // End Owner commands
-
-
-
-
 
 if (message.author.id === config.ownerID) {
     if (command === '!stop') { // STOP THE BOT
