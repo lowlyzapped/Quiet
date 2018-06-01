@@ -25,11 +25,11 @@ var https = require('https');
 var http = require('http');
 
 if (!fs.existsSync(helpBTextPath)) {
-    console.log("The file " + helpBTextPath + " does not exist. This may cause errors.");
+    console.log("The file " + helpBTextPath + " does not exist. The "+config.prefix+"help command will be disabled.");
 }
 
 if (!fs.existsSync(welcomeTextPath)) {
-    console.log("The file " + welcomeTextPath + " does not exist. This may cause errors.");
+    console.log("The file " + welcomeTextPath + " does not exist. Welcome messages upon members joining will not be sent.");
 }
 
 if (!fs.existsSync(rulesTextPath)) {
@@ -49,45 +49,50 @@ if (fs.existsSync(linksPath)) {
 }
 
 client.on('ready', () => {
-           console.log(client.user.username + " online.");
-           client.user.setStatus('online'); //online, idle, dnd, invisible
-           client.user.setPresence({game:{name:config.prefix+"help | v"+ package.version, type:0}});
-         });
+          console.log(client.user.username + " online.");
+          client.user.setStatus('online'); //online, idle, dnd, invisible
+          client.user.setPresence({game:{name:config.prefix+"help | v"+ package.version, type:0}});
+});
 
 client.on('error', (err) => console.error(err));
 
 client.on('guildMemberAdd', member => { // when a member joins the server
-           var channel = member.guild.channels.find('name', config.logChannel); //searches for a channel named #member-log
-           if (!channel) return;  // if channel not found, abort
+          var channel = member.guild.channels.find('name', config.logChannel); //searches for a channel named #member-log
+          if (!channel) return;  // if channel not found, abort
 
-           var embed = new Discord.RichEmbed()
-             .setColor(0x18bb68)
-             .setAuthor(client.user.username, client.user.avatarURL)
-             .setDescription(""+member.user+" joined the server.")
-             .setTimestamp()
-           channel.send({embed}).catch(console.error);
+          var embed = new Discord.RichEmbed()
+              .setColor(0x18bb68)
+              .setAuthor(client.user.username, client.user.avatarURL)
+              .setDescription(""+member.user+" joined the server.")
+              .setTimestamp()
 
-           if (!fs.existsSync(welcomeTextPath)) return;
+          channel.send({embed}).catch(console.error);
 
-           fs.readFile(welcomeTextPath, 'utf8', (err, welcomeText) => {
-               if (err) return console.log(err);
+          if (!fs.existsSync(welcomeTextPath)) {
+              return;
+          } else {
+              fs.readFile(welcomeTextPath, 'utf8', (err, welcomeText) => {
+                  if (err) return console.log(err);
 
-           fs.readFile(rulesTextPath, 'utf8', (err, rulesText) => {
-               if (err) return console.log(err);
+                  member.send("Hello "+member.user.username+"! "+ welcomeText);
+              });
+          }
 
-           var embed = new Discord.RichEmbed()
-               .setColor(config.embedColor)
-               .setAuthor(member.guild.name+" Rules", member.guild.iconURL)
-               .setDescription(rulesText)
-               .setFooter(new Date())
+          if (!fs.existsSync(rulesTextPath)) {
+              return;
+          } else {
+              fs.readFile(rulesTextPath, 'utf8', (err, rulesText) => {
+                  if (err) return console.log(err);
 
-           member.send("Hello "+member.user.username+"! "+ welcomeText);
+                  var embed = new Discord.RichEmbed()
+                      .setColor(config.embedColor)
+                      .setAuthor(member.guild.name+" Rules", member.guild.iconURL)
+                      .setDescription(rulesText)
+                      .setFooter(new Date())
 
-           if (!fs.existsSync(rulesTextPath)) return;
-           member.send({embed})
-               .catch(console.error);
-           });
-           });
+                  member.send({embed}).catch(console.error);
+              });
+          }
 });
 
 client.on('guildMemberRemove', member => {
@@ -99,6 +104,7 @@ client.on('guildMemberRemove', member => {
              .setAuthor(client.user.username, client.user.avatarURL)
              .setDescription("**"+member.user.username+"#"+member.user.discriminator+"** left the server.")
              .setTimestamp()
+
            channel.send({embed}).catch(console.error);
 });
 
@@ -109,7 +115,7 @@ if (message.channel.type === 'dm' && message.content.startsWith(config.prefix)) 
     return;
 }
 
-if (message.author.bot) return; // ignores bots
+if (message.author.bot) return; // ignores bots and itself
 
 var modRole = message.guild.roles.find("name", config.modRole);
 if (message.content.includes("discord.gg/")) {
@@ -120,20 +126,23 @@ if (!message.content.startsWith(config.prefix)) return; // if message doesn't st
 const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
 const command = args.shift().toLowerCase(); // fancy magic
 
-if (command === 'ping') { // gets reply time
-    message.delete(0);
-    if (message.author.id !== config.ownerID) return;
-    message.channel.send("Latency of **"+Math.round(client.ping)+"** ms.").then(m => m.delete(2000));
+if (command === 'ping') { // $ping
+    message.delete(0); // Automatically deletes the author's message.
+    if (message.author.id !== config.ownerID) return; // If the author isn't the owner, stop.
+    message.channel.send("Latency of **"+Math.round(client.ping)+"** ms.").then(m => m.delete(2000)); // Checks pings
 }
 
-if (command === 'help') {
-    message.delete(5000); // deletes the user's message after ~5 seconds
-    message.reply("help has been sent.").then(m => m.delete(5000));
+if (command === 'help') { // $help
+    message.delete(5000); // Deletes the author's message after ~5 seconds.
 
-    fs.readFile(helpBTextPath, 'utf8', (err, helpBasic) => {
+    if (!fs.existsSync(helpBTextPath)) return; // If the directory isn't found, stop the command.
+
+    message.reply("help has been sent.").then(m => m.delete(5000)); // Replies to the command author, then self-deletes.
+
+    fs.readFile(helpBTextPath, 'utf8', (err, helpBasic) => { // Reads and parses data from each file into a separate variable.
         if (err) return console.log(err);
 
-    fs.readFile(helpMTextPath, 'utf8', (err, helpMod) => {
+    fs.readFile(helpMTextPath, 'utf8', (err, helpMod) => { // (I should make a seperate .js for all this.)
         if (err) return console.log(err);
 
     fs.readFile(helpPTextPath, 'utf8', (err, helpPoll) => {
@@ -145,32 +154,33 @@ if (command === 'help') {
     fs.readFile(helpOTextPath, 'utf8', (err, helpOwner) => {
         if (err) return console.log(err);
 
-    var embed = new Discord.RichEmbed()
-      .setColor(config.embedColor)
-      .setTitle(client.user.username)
+    var embed = new Discord.RichEmbed() // Creates an embed with the propreties below.
+      .setColor(config.embedColor) // Hex color set in config.json
+      .setTitle(client.user.username) // The bot's name.
       .setDescription("A complete list of the available commands.")
-      .setThumbnail(client.user.avatarURL)
-      .addField("Basic Commands:", helpBasic, true)
+      .setThumbnail(client.user.avatarURL) // The bot's avatar, will return empty if it's a lame bot with no pic.
+      .addField("Basic Commands:", helpBasic, true) // Sends the parsed data here.
       .setFooter("For additional help, contact TheV0rtex#4553")
       // .setTimestamp() // By default today's date.
 
       if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID) {
-          embed.addField("Moderator Commands:", helpMod, true);
-          embed.addField("Poll Commands:", helpPoll, true);
+          embed.addField("Moderator Commands:", helpMod, true); // If the author is the owner or has the mod role,
+          embed.addField("Poll Commands:", helpPoll, true); // send the following parsed texts.
       }
 
-      if (message.author.id === config.ownerID) {
+      if (message.author.id === config.ownerID) { // If the author is the owner...
           embed.addField("Bot Cosmetic Commands:", helpBotCosmetic, true)
           embed.addField("Owner Commands:", helpOwner, true)
       }
 
-    message.author.send({embed}).catch(console.error);
+    message.author.send({embed}).catch(console.error); // Send the embed with all the text.
 
     }); }); }); }); });
 }
 
 if (command === "rules") {
     message.delete(5000);
+
     if (!fs.existsSync(rulesTextPath)) return;
 
     fs.readFile(rulesTextPath, 'utf8', (err, rulesText) => {
@@ -192,8 +202,9 @@ if (command === "rules") {
 
 if (command === 'joined') {
     message.delete(0);
+
     var member = message.channel.guild.fetchMember(message.author)
-    .then(member => {
+      .then(member => {
         var date = member.joinedAt;
 
         var year = date.getUTCFullYear();
@@ -208,8 +219,8 @@ if (command === 'joined') {
 
         end += mins.toString() + " (UTC)"
 
-       message.reply("you joined on " + end)
-     }).catch(console.error);
+        message.reply("you joined on " + end)
+      }).catch(console.error);
 }
 
 if (command === 'avatar') {
@@ -222,22 +233,20 @@ if (command === 'avatar') {
         .setFooter('Powered by '+client.user.username+'™')
 
     message.reply('your avatar:');
-    message.channel.send({embed})
-      .catch(console.error);
+    message.channel.send({embed}).catch(console.error);
 }
 
 if (command === 'servericon') {
     message.delete(5000);
 
     var embed = new Discord.RichEmbed()
-      .setColor(config.embedColor)
-      .setTitle(message.guild.name+"'s icon!")
-      .setDescription("[Direct Link]("+message.guild.iconURL+")")
-      .setImage(message.guild.iconURL)
-      .setFooter("Powered by "+client.user.username+"™")
+        .setColor(config.embedColor)
+        .setTitle(message.guild.name+"'s icon!")
+        .setDescription("[Direct Link]("+message.guild.iconURL+")")
+        .setImage(message.guild.iconURL)
+        .setFooter("Powered by "+client.user.username+"™")
 
-    message.channel.send({embed})
-      .catch(console.error);
+    message.channel.send({embed}).catch(console.error);
 }
 
 if (command === 'link') {
@@ -247,9 +256,9 @@ if (command === 'link') {
 
     if (args[0] == null) {
         var embed = new Discord.RichEmbed()
-          .setColor(config.embedColor)
-          .setTitle("All Links")
-          .setFooter(new Date())
+            .setColor(config.embedColor)
+            .setTitle("All Links")
+            .setFooter(new Date())
 
         var text = "";
         for (var i = 0; i < links.length; i++) {
@@ -287,12 +296,10 @@ if (command === 'coin') { // flip a coin
   message.delete(0);
   var flip = Math.floor(Math.random() * 2 + 1);
   if (flip === 1) {
-      message.channel.send("Flipped **Tails** !")
-        .then(m => m.delete(5000));
+      message.channel.send("Flipped **Tails** !").then(m => m.delete(5000));
   }
   else {
-      message.channel.send("Flipped **Heads** !")
-        .then(m => m.delete(5000));
+      message.channel.send("Flipped **Heads** !").then(m => m.delete(5000));
   }
 }
 
@@ -389,14 +396,13 @@ if (command === 'getavatar') {
     if (message.mentions.members.first() == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
 
     var embed = new Discord.RichEmbed()
-      .setColor(config.embedColor)
-      .setTitle(member.user.username +"'s avatar!")
-      .setDescription("[Direct Link]("+ member.user.avatarURL +")")
-      .setImage(member.user.avatarURL)
-      .setFooter("Powered by "+ client.user.username +"™")
+        .setColor(config.embedColor)
+        .setTitle(member.user.username +"'s avatar!")
+        .setDescription("[Direct Link]("+ member.user.avatarURL +")")
+        .setImage(member.user.avatarURL)
+        .setFooter("Powered by "+ client.user.username +"™")
 
-    message.channel.send({embed})
-      .catch(console.error);
+    message.channel.send({embed}).catch(console.error);
 }
 
 if (command === 'purge') { // $purge <value> (max 100)
@@ -419,9 +425,9 @@ if (command === 'kick') { // $kick <@mention>
     if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID || userMute.id === client.id) return message.reply("I am not allowed to kick this user.").then(m => m.delete(5000));
 
     member.kick().then((member) => { //kicks member @mentionned
-    message.channel.send(member +" has been kicked.").then(m => m.delete(5000))
-      }).catch(() => {
-    message.channel.send("An error has occured.").then(m => m.delete(5000))
+      message.channel.send(member +" has been kicked.").then(m => m.delete(5000))
+    }).catch(() => {
+        message.channel.send("An error has occured.").then(m => m.delete(5000))
       });
 }
 
@@ -434,9 +440,9 @@ if (command === "ban") { // $ban <@mention>
     if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID || userMute.id === client.id) return message.reply("I am not allowed to ban this user.").then(m => m.delete(5000));
 
     member.ban().then((member) => {
-    message.channel.send(member +" has been banned.").then(m => m.delete(5000))
-      }).catch(() => {
-    message.channel.send("An error has occured.").then(m => m.delete(5000));
+      message.channel.send(member +" has been banned.").then(m => m.delete(5000))
+    }).catch(() => {
+        message.channel.send("An error has occured.").then(m => m.delete(5000));
       });
 }
 
@@ -453,20 +459,21 @@ if (command === 'mute') {
     if (userMute.roles.has(role.id)) return message.reply("this user is already muted.").then(m => m.delete(5000));
 
     userMute.addRole(role).then((userMute) => {
-    message.channel.send("User has been muted.").then(m => m.delete(5000))
-      .catch(() => {
-    message.channel.send("An error has occured.").then(m => m.delete(5000))
-      })
+      message.channel.send("User has been muted.").then(m => m.delete(5000))
+        .catch(() => {
+          message.channel.send("An error has occured.").then(m => m.delete(5000))
+        })
     });
 
     var channel = message.guild.channels.find('name', config.logChannel); //searches for a channel
     if (!channel) return;  // if channel not found, abort
 
     var embed = new Discord.RichEmbed()
-      .setColor(0x696969)
-      .setAuthor(client.user.username, client.user.avatarURL)
-      .setDescription(""+userMute+" was muted by "+message.author)
-      .setTimestamp()
+        .setColor(0x696969)
+        .setAuthor(client.user.username, client.user.avatarURL)
+        .setDescription(""+userMute+" was muted by "+message.author)
+        .setTimestamp()
+
     channel.send({embed}).catch(console.error);
 }
 
@@ -485,9 +492,9 @@ if (command === 'unmute') {
     if (!userUnmute.roles.has(role.id)) return message.reply("this user is not muted.").then(m => m.delete(5000));
 
     userUnmute.removeRole(role).then((userUnmute) => {
-    message.channel.send("User has been unmuted.").then(m => m.delete(5000))
+      message.channel.send("User has been unmuted.").then(m => m.delete(5000))
       .catch(() => {
-    message.channel.send("An error has occured.").then(m => m.delete(5000))
+        message.channel.send("An error has occured.").then(m => m.delete(5000))
       })
     });
 
@@ -495,10 +502,11 @@ if (command === 'unmute') {
     if (!channel) return;  // if channel not found, abort
 
     var embed = new Discord.RichEmbed()
-      .setColor(0x696969)
-      .setAuthor(client.user.username, client.user.avatarURL)
-      .setDescription(""+userUnmute+" was unmuted by "+message.author)
-      .setTimestamp()
+        .setColor(0x696969)
+        .setAuthor(client.user.username, client.user.avatarURL)
+        .setDescription(""+userUnmute+" was unmuted by "+message.author)
+        .setTimestamp()
+
     channel.send({embed}).catch(console.error);
 }
 
@@ -517,19 +525,19 @@ if (command === "poll") { // $poll <title> § <description>
     }
 
     var embed = new Discord.RichEmbed()
-      .setColor(config.embedColor)
-      .setTitle(title)
-      .setDescription(desc)
-      .setTimestamp()
+        .setColor(config.embedColor)
+        .setTitle(title)
+        .setDescription(desc)
+        .setTimestamp()
 
     message.channel.send({embed})
-        .then(function(msg) {
+      .then(function(msg) {
             msg.react("👍");
             msg.react("👎");
-        }).catch(console.error);
+      }).catch(console.error);
 }
 
-if (command === "epoll") { // $epoll <title> § <descrition> § <choice A> § <choice B> § etc. up to 5
+if (command === "epoll") { // $epoll <title> | <descrition> | <choice A> | <choice B> | etc. up to 5
     message.delete(0);
 
     var str = message.content.slice(config.prefix.length + 6).trim();
@@ -544,81 +552,81 @@ if (command === "epoll") { // $epoll <title> § <descrition> § <choice A> § <c
 
     if (arg[4] == undefined) {
         var embed = new Discord.RichEmbed()
-          .setColor(config.embedColor)
-          .setTitle(arg[0])
-          .setDescription(arg[1]+"\n\n"+
+            .setColor(config.embedColor)
+            .setTitle(arg[0])
+            .setDescription(arg[1]+"\n\n"+
                           ":regional_indicator_a: "+arg[2]+"\n"+
                           ":regional_indicator_b: "+arg[3])
-          .setTimestamp()
+            .setTimestamp()
 
-          message.channel.send({embed})
-              .then(function(msg) {
+        message.channel.send({embed})
+            .then(function(msg) {
                   msg.react("🇦");
                   msg.react("🇧");
-              }).catch(console.error);
-          return;
+            }).catch(console.error);
+        return;
     }
 
     if (arg[5] == undefined) {
         var embed = new Discord.RichEmbed()
-          .setColor(config.embedColor)
-          .setTitle(arg[0])
-          .setDescription(arg[1]+"\n\n"+
+            .setColor(config.embedColor)
+            .setTitle(arg[0])
+            .setDescription(arg[1]+"\n\n"+
                           ":regional_indicator_a: "+arg[2]+"\n"+
                           ":regional_indicator_b: "+arg[3]+"\n"+
                           ":regional_indicator_c: "+arg[4])
-          .setTimestamp()
+            .setTimestamp()
 
-          message.channel.send({embed})
-              .then(function(msg) {
+        message.channel.send({embed})
+            .then(function(msg) {
                   msg.react("🇦");
                   msg.react("🇧");
                   msg.react("🇨");
-              }).catch(console.error);
-          return;
+            }).catch(console.error);
+        return;
     }
 
     if (arg[6] == undefined) {
         var embed = new Discord.RichEmbed()
-          .setColor(config.embedColor)
-          .setTitle(arg[0])
-          .setDescription(arg[1]+"\n\n"+
+            .setColor(config.embedColor)
+            .setTitle(arg[0])
+            .setDescription(arg[1]+"\n\n"+
                           ":regional_indicator_a: "+arg[2]+"\n"+
                           ":regional_indicator_b: "+arg[3]+"\n"+
                           ":regional_indicator_c: "+arg[4]+"\n"+
                           ":regional_indicator_d: "+arg[5])
-          .setTimestamp()
+            .setTimestamp()
 
-          message.channel.send({embed})
-              .then(function(msg) {
+        message.channel.send({embed})
+            .then(function(msg) {
                   msg.react("🇦");
                   msg.react("🇧");
                   msg.react("🇨");
                   msg.react("🇩");
-              }).catch(console.error);
-          return;
+            }).catch(console.error);
+        return;
     }
 
     var embed = new Discord.RichEmbed()
-      .setColor(config.embedColor)
-      .setTitle(arg[0])
-      .setDescription(arg[1]+"\n\n"+
+        .setColor(config.embedColor)
+        .setTitle(arg[0])
+        .setDescription(arg[1]+"\n\n"+
                       ":regional_indicator_a: "+arg[2]+"\n"+
                       ":regional_indicator_b: "+arg[3]+"\n"+
                       ":regional_indicator_c: "+arg[4]+"\n"+
                       ":regional_indicator_d: "+arg[5]+"\n"+
                       ":regional_indicator_e: "+arg[6])
-      .setTimestamp()
+        .setTimestamp()
 
-      message.channel.send({embed})
-          .then(function(msg) {
+    message.channel.send({embed})
+        .then(function(msg) {
               msg.react("🇦");
               msg.react("🇧");
               msg.react("🇨");
               msg.react("🇩");
               msg.react("🇪");
-          }).catch(console.error);
-      return;
+        }).catch(console.error);
+    return;
 }
 // End Poll Commands
 
