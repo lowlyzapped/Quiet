@@ -531,7 +531,7 @@ if (command === "poll") { // $poll <title> § <description>
         .setTimestamp()
 
     message.channel.send({embed})
-      .then(function(msg) {
+      .then(msg => {
             msg.react("👍");
             msg.react("👎");
       }).catch(console.error);
@@ -544,66 +544,9 @@ if (command === "epoll") { // $epoll <title> | <descrition> | <choice A> | <choi
     var arg = str.split("|");
 
     if (arg[1] == undefined || arg[2] == undefined || arg[3] == undefined) {
-        message.reply("an error has occured. Please excute `"+config.prefix+"epoll <title> | <description> | <choice 1> | <choice 2>`")
+        message.reply("there are missing arguments. Please excute `"+config.prefix+"epoll <title> | <description> | <choice 1> | <choice 2>`")
           .then(m => m.delete(5000))
           .catch(console.error);
-        return;
-    }
-
-    if (arg[4] == undefined) {
-        var embed = new Discord.RichEmbed()
-            .setColor(config.embedColor)
-            .setTitle(arg[0])
-            .setDescription(arg[1]+"\n\n"+
-                          ":regional_indicator_a: "+arg[2]+"\n"+
-                          ":regional_indicator_b: "+arg[3])
-            .setTimestamp()
-
-        message.channel.send({embed})
-            .then(function(msg) {
-                  msg.react("🇦");
-                  msg.react("🇧");
-            }).catch(console.error);
-        return;
-    }
-
-    if (arg[5] == undefined) {
-        var embed = new Discord.RichEmbed()
-            .setColor(config.embedColor)
-            .setTitle(arg[0])
-            .setDescription(arg[1]+"\n\n"+
-                          ":regional_indicator_a: "+arg[2]+"\n"+
-                          ":regional_indicator_b: "+arg[3]+"\n"+
-                          ":regional_indicator_c: "+arg[4])
-            .setTimestamp()
-
-        message.channel.send({embed})
-            .then(function(msg) {
-                  msg.react("🇦");
-                  msg.react("🇧");
-                  msg.react("🇨");
-            }).catch(console.error);
-        return;
-    }
-
-    if (arg[6] == undefined) {
-        var embed = new Discord.RichEmbed()
-            .setColor(config.embedColor)
-            .setTitle(arg[0])
-            .setDescription(arg[1]+"\n\n"+
-                          ":regional_indicator_a: "+arg[2]+"\n"+
-                          ":regional_indicator_b: "+arg[3]+"\n"+
-                          ":regional_indicator_c: "+arg[4]+"\n"+
-                          ":regional_indicator_d: "+arg[5])
-            .setTimestamp()
-
-        message.channel.send({embed})
-            .then(function(msg) {
-                  msg.react("🇦");
-                  msg.react("🇧");
-                  msg.react("🇨");
-                  msg.react("🇩");
-            }).catch(console.error);
         return;
     }
 
@@ -612,21 +555,21 @@ if (command === "epoll") { // $epoll <title> | <descrition> | <choice A> | <choi
         .setTitle(arg[0])
         .setDescription(arg[1]+"\n\n"+
                       ":regional_indicator_a: "+arg[2]+"\n"+
-                      ":regional_indicator_b: "+arg[3]+"\n"+
-                      ":regional_indicator_c: "+arg[4]+"\n"+
-                      ":regional_indicator_d: "+arg[5]+"\n"+
-                      ":regional_indicator_e: "+arg[6])
+                      ":regional_indicator_b: "+arg[3])
         .setTimestamp()
 
-    message.channel.send({embed})
-        .then(function(msg) {
-              msg.react("🇦");
-              msg.react("🇧");
-              msg.react("🇨");
-              msg.react("🇩");
-              msg.react("🇪");
-        }).catch(console.error);
-    return;
+        if (arg[4] != undefined) embed.addField("", ":regional_indicator_c: "+arg[4], true);
+        if (arg[5] != undefined) embed.addField("", ":regional_indicator_d: "+arg[5], true);
+        if (arg[6] != undefined) embed.addField("", ":regional_indicator_e: "+arg[6], true);
+
+        message.channel.send({embed})
+          .then(msg => {
+                msg.react("🇦");
+                msg.react("🇧");
+                if (arg[4] != undefined) msg.react("🇨");
+                if (arg[5] != undefined) msg.react("🇩");
+                if (arg[6] != undefined) msg.react("🇪");
+          }).catch(console.error);
 }
 // End Poll Commands
 
@@ -677,8 +620,7 @@ if (command === 'serverinfo') {
         .addField("Channels:", getChannels(guild))
         .setFooter(new Date())
 
-    message.channel.send({embed})
-      .catch(console.error);
+    message.channel.send({embed}).catch(console.error);
 
     function getDate(date) {
     var mins = date.getUTCMinutes();
@@ -720,22 +662,20 @@ if (command === 'serverinfo') {
     return verificationLevel;
     }
 
-  function getChannels(guild) {
-  var channels = guild.channels.array();
-  var text = 0;
-  var voice = 0;
+    function getChannels(guild) {
+        var channels = guild.channels.array();
+        var text = 0;
+        var voice = 0;
 
-  for (var x = 0; x < channels.length; x++) {
-    if (channels[x].type == "text") {
-        text++
-    }
-    else {
-        voice++
-    }
-  }
+        for (var x = 0; x < channels.length; x++) {
+             if (channels[x].type == "text") {
+                 text++
+             }
+             else voice++;
+        }
 
-  return ""+ text +" text channels and "+ voice +" voice channels";
-  }
+        return ""+ text +" text channels and "+ voice +" voice channels";
+    }
 }
 
 if (command === 'version') {
@@ -751,7 +691,6 @@ if (command === 'setgame') {
 
     msgcontent = message.content.slice(config.prefix.length+7);
     client.user.setPresence({game:{name:''+msgcontent+'', type:0}}).catch(console.error);
-    console.log("Game set to "+ msgcontent +".");
 }
 
 if (command === 'setstatus') {
@@ -759,7 +698,6 @@ if (command === 'setstatus') {
 
     msgcontent = message.content.slice(config.prefix.length+10);
     client.user.setStatus(msgcontent).catch(console.error);  //online, idle, dnd, invisible
-    console.log("Status set to "+ msgcontent +".");
 }
 
 if (command === 'setnickname') {
@@ -767,7 +705,6 @@ if (command === 'setnickname') {
 
     msgcontent = message.content.substring(config.prefix.length+11);
     message.guild.member(client.user).setNickname(msgcontent).catch(console.error);
-    console.log("Nickname set to "+ msgcontent +".");
 }
 
 if (command === 'reset') {
@@ -776,19 +713,18 @@ if (command === 'reset') {
     client.user.setPresence({game:{name:config.prefix + "help", type:0}});
     client.user.setStatus("online");
     message.guild.member(client.user).setNickname('');
-    console.log("Bot cosmetics were reset.");
 }
 // End Bot Cosmetic Commands
 
 } // End Owner commands
 
-if (message.author.id === config.ownerID) {
+if (message.author.id === config.ownerID) { // $!
     if (command === '!stop') { // STOP THE BOT
         console.log(client.user.username + " has been deactivated.");
-        process.exit(1);
+        process.exit(1); // Stop the bot, for real.
     }
 }
 
 });
 
-client.login(config.token); //login
+client.login(config.token); // Login
