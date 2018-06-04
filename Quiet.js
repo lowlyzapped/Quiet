@@ -100,10 +100,10 @@ client.on('guildMemberRemove', member => {
            if (!channel) return;
 
            var embed = new Discord.RichEmbed()
-             .setColor(0xe9890f)
-             .setAuthor(client.user.username, client.user.avatarURL)
-             .setDescription("**"+member.user.username+"#"+member.user.discriminator+"** left the server.")
-             .setTimestamp()
+               .setColor(0xe9890f)
+               .setAuthor(client.user.username, client.user.avatarURL)
+               .setDescription("**"+member.user.username+"#"+member.user.discriminator+"** left the server.")
+               .setTimestamp()
 
            channel.send({embed}).catch(console.error);
 });
@@ -155,13 +155,13 @@ if (command === 'help') { // $help
         if (err) return console.log(err);
 
     var embed = new Discord.RichEmbed() // Creates an embed with the propreties below.
-      .setColor(config.embedColor) // Hex color set in config.json
-      .setTitle(client.user.username) // The bot's name.
-      .setDescription("A complete list of the available commands.")
-      .setThumbnail(client.user.avatarURL) // The bot's avatar, will return empty if it's a lame bot with no pic.
-      .addField("Basic Commands:", helpBasic, true) // Sends the parsed data here.
-      .setFooter("For additional help, contact TheV0rtex#4553")
-      // .setTimestamp() // By default today's date.
+        .setColor(config.embedColor) // Hex color set in config.json
+        .setTitle(client.user.username) // The bot's name.
+        .setDescription("A complete list of the available commands.")
+        .setThumbnail(client.user.avatarURL) // The bot's avatar, will return empty if it's a lame bot with no pic.
+        .addField("Basic Commands:", helpBasic, true) // Sends the parsed data here.
+        .setFooter("For additional help, contact TheV0rtex#4553")
+        // .setTimestamp() // By default today's date.
 
       if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID) {
           embed.addField("Moderator Commands:", helpMod, true); // If the author is the owner or has the mod role,
@@ -385,7 +385,7 @@ if (command === 'memberlist') { // $memberlist
     message.channel.send("There are currently **"+ message.guild.memberCount +"** members on this server:\n"+
                           "**Moderators**: "+modRole.members.keyArray().length+"\n"+
                           "**YouTubers**: "+youtuberRole.members.keyArray().length+"\n"+
-                          "**Streaners**: "+streamerRole.members.keyArray().length)
+                          "**Streamers**: "+streamerRole.members.keyArray().length)
       .catch(console.error);
 }
 
@@ -554,13 +554,27 @@ if (command === "epoll") { // $epoll <title> | <descrition> | <choice A> | <choi
         .setColor(config.embedColor)
         .setTitle(arg[0])
         .setDescription(arg[1]+"\n\n"+
-                      ":regional_indicator_a: "+arg[2]+"\n"+
-                      ":regional_indicator_b: "+arg[3])
+                        ":regional_indicator_a: "+arg[2]+"\n"+
+                        ":regional_indicator_b: "+arg[3])
         .setTimestamp()
 
-        if (arg[4] != undefined) embed.addField("", ":regional_indicator_c: "+arg[4], true);
-        if (arg[5] != undefined) embed.addField("", ":regional_indicator_d: "+arg[5], true);
-        if (arg[6] != undefined) embed.addField("", ":regional_indicator_e: "+arg[6], true);
+        if (arg[4] != undefined) embed.setDescription(arg[1]+"\n\n"+
+                                                      ":regional_indicator_a: "+arg[2]+"\n"+
+                                                      ":regional_indicator_b: "+arg[3]+"\n"+
+                                                      ":regional_indicator_b: "+arg[4]);
+
+        if (arg[5] != undefined) embed.setDescription(arg[1]+"\n\n"+
+                                                      ":regional_indicator_a: "+arg[2]+"\n"+
+                                                      ":regional_indicator_b: "+arg[3]+"\n"+
+                                                      ":regional_indicator_b: "+arg[4]+"\n"+
+                                                      ":regional_indicator_b: "+arg[5]);
+
+        if (arg[6] != undefined) embed.setDescription(arg[1]+"\n\n"+
+                                                      ":regional_indicator_a: "+arg[2]+"\n"+
+                                                      ":regional_indicator_b: "+arg[3]+"\n"+
+                                                      ":regional_indicator_b: "+arg[4]+"\n"+
+                                                      ":regional_indicator_b: "+arg[5]+"\n"+
+                                                      ":regional_indicator_b: "+arg[6]);
 
         message.channel.send({embed})
           .then(msg => {
