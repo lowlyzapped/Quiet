@@ -12,6 +12,7 @@ if (config.token == '' || config.prefix == '') {
 
 var rulesTextPath = "./files/rules.md";
 var welcomeTextPath = "./files/welcome.md";
+
 var linksPath = "./files/links.json";
 var linksConfig = null;
 
@@ -33,7 +34,7 @@ if (!fs.existsSync(welcomeTextPath)) {
 }
 
 if (!fs.existsSync(rulesTextPath)) {
-    console.log("The file " + rulesTextPath + " does not exist. This may cause errors.");
+    console.log("The file " + rulesTextPath + " does not exist. The "+config.prefix+"rules command will be disabled.");
 }
 
 if (fs.existsSync(linksPath)) {
@@ -88,7 +89,7 @@ client.on('guildMemberAdd', member => { // when a member joins the server
                       .setColor(config.embedColor)
                       .setAuthor(member.guild.name+" Rules", member.guild.iconURL)
                       .setDescription(rulesText)
-                      .setFooter(new Date())
+                      .setFooter("Powered by "+client.user.username+"™")
 
                   member.send({embed}).catch(console.error);
               });
@@ -118,6 +119,7 @@ if (message.channel.type === 'dm' && message.content.startsWith(config.prefix)) 
 if (message.author.bot) return; // ignores bots and itself
 
 var modRole = message.guild.roles.find("name", config.modRole);
+
 if (message.content.includes("discord.gg/")) {
     if (!message.member.roles.has(modRole.id) && message.author.id !== ownerID) return message.delete(0);
 }
@@ -190,7 +192,7 @@ if (command === "rules") {
         .setColor(config.embedColor)
         .setAuthor(message.guild.name+" Rules", message.guild.iconURL)
         .setDescription(rulesText)
-        .setFooter(new Date())
+        .setFooter("Powered by "+client.user.username+"™")
 
     message.reply('rules have been sent.')
         .then(m => m.delete(5000));
@@ -258,7 +260,7 @@ if (command === 'link') {
         var embed = new Discord.RichEmbed()
             .setColor(config.embedColor)
             .setTitle("All Links")
-            .setFooter(new Date())
+            .setFooter("Powered by "+client.user.username+"™")
 
         var text = "";
         for (var i = 0; i < links.length; i++) {
@@ -287,7 +289,7 @@ if (command === 'link') {
         .setAuthor("Link: "+ links[x].name.toLowerCase())
         .setTitle(links[x].link)
         .setDescription(links[x].description)
-        .setFooter(new Date())
+        .setFooter("Powered by "+client.user.username+"™")
 
         message.channel.send({embed}).catch(console.error);
 }
@@ -632,7 +634,7 @@ if (command === 'serverinfo') {
         .addField("Verification Level:", getVerification(guild))
         .addField("Member Count:", guild.memberCount)
         .addField("Channels:", getChannels(guild))
-        .setFooter(new Date())
+        .setFooter("Powered by "+client.user.username+"™")
 
     message.channel.send({embed}).catch(console.error);
 
