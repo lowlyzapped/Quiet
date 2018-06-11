@@ -100,6 +100,8 @@ client.on('guildMemberRemove', member => {
            var channel = member.guild.channels.find('name', config.logChannel);
            if (!channel) return;
 
+           if (member.kick || member.ban) return;
+
            var embed = new Discord.RichEmbed()
                .setColor(0xe9890f)
                .setAuthor(client.user.username, client.user.avatarURL)
@@ -367,7 +369,7 @@ if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID
 if (command === 'say') { // $say <message>
     message.delete(0);
 
-    var msgcontent = message.content.slice(config.prefix.length + 4); // ignores the first 4 characters of the message
+    var msgcontent = message.content.slice(config.prefix.length + command.length + 2);
     message.channel.send(msgcontent).catch(console.error);
 }
 
@@ -421,102 +423,120 @@ if (command === 'purge') { // $purge <value> (max 100)
 if (command === 'kick') { // $kick <@mention>
     message.delete(0);
 
-    var member = message.mentions.members.first();
-    if (message.mentions.members.first() == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
+    var target = message.mentions.members.first();
+    if (target == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
 
-    if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID || userMute.id === client.id) return message.reply("I am not allowed to kick this user.").then(m => m.delete(5000));
+    if (target.roles.has(modRole.id) || target.id === config.ownerID || target.id === client.id) return message.reply("I am not allowed to mute this user.").then(m => m.delete(5000));
 
-    member.kick().then((member) => { //kicks member @mentionned
-      message.channel.send(member +" has been kicked.").then(m => m.delete(5000))
+    target.kick().then((target) => { //kicks member @mentionned
+      message.channel.send(target +" has been kicked.").then(m => m.delete(5000));
+
+      var channel = message.guild.channels.find('name', config.logChannel);
+      if (!channel) return;
+
+      var embed = new Discord.RichEmbed()
+          .setColor(0xff0000)
+          .setAuthor(client.user.username, client.user.avatarURL)
+          .setDescription("**"+ target.user.tag +"** was kicked by "+ message.author +".")
+          .setTimestamp()
+
+      channel.send({embed}).catch(console.error);
     }).catch(() => {
-        message.channel.send("An error has occured.").then(m => m.delete(5000))
+        message.reply("an error has occured.").then(m => m.delete(5000))
       });
 }
 
 if (command === "ban") { // $ban <@mention>
     message.delete(0);
 
-    var member = message.mentions.members.first();
-    if (message.mentions.members.first() == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
+    var target = message.mentions.members.first();
+    if (target == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
 
-    if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID || userMute.id === client.id) return message.reply("I am not allowed to ban this user.").then(m => m.delete(5000));
+    if (target.roles.has(modRole.id) || target.id === config.ownerID || target.id === client.id) return message.reply("I am not allowed to mute this user.").then(m => m.delete(5000));
 
-    member.ban().then((member) => {
-      message.channel.send(member +" has been banned.").then(m => m.delete(5000))
+    target.ban().then((target) => {
+      message.channel.send(target +" has been banned.").then(m => m.delete(5000));
+
+      var channel = member.guild.channels.find('name', config.logChannel);
+      if (!channel) return;
+
+      var embed = new Discord.RichEmbed()
+          .setColor(0xff0000)
+          .setAuthor(client.user.username, client.user.avatarURL)
+          .setDescription("**"+ target.user.tag +"** was banned by "+ message.author +".")
+          .setTimestamp()
+
+      channel.send({embed}).catch(console.error);
     }).catch(() => {
-        message.channel.send("An error has occured.").then(m => m.delete(5000));
+        message.reply("an error has occured.").then(m => m.delete(5000))
       });
 }
 
 if (command === 'mute') {
     message.delete(0);
 
+    var target = message.mentions.members.first();
     var role = message.guild.roles.find("name", config.muteRole);
-    if (role == undefined || role == null) message.reply("this server doesn't have a \`"+ config.muteRole +"\` role.").then(m => m.delete(5000));
 
-    var userMute = message.guild.member(message.mentions.users.first());
-    if (userMute == undefined || userMute == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
+    if (role == undefined || role == null) return message.reply("this server doesn't have a \`"+ config.muteRole +"\` role.").then(m => m.delete(5000));
+    if (target.roles.has(role.id)) return message.reply("this user is already muted.").then(m => m.delete(5000));
 
-    if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID) return message.reply("I am not allowed to mute this user.").then(m => m.delete(5000));
-    if (userMute.roles.has(role.id)) return message.reply("this user is already muted.").then(m => m.delete(5000));
+    if (target == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
+    if (target.roles.has(modRole.id) || target.id === config.ownerID || target.id === client.id) return message.reply("I am not allowed to mute this user.").then(m => m.delete(5000));
 
-    userMute.addRole(role).then((userMute) => {
-      message.channel.send("User has been muted.").then(m => m.delete(5000))
-        .catch(() => {
-          message.channel.send("An error has occured.").then(m => m.delete(5000))
-        })
-    });
+    target.addRole(role).then((target) => {
+      message.channel.send(target.user.username +" has been muted.").then(m => m.delete(5000));
 
-    var channel = message.guild.channels.find('name', config.logChannel); //searches for a channel
-    if (!channel) return;  // if channel not found, abort
+      var channel = message.guild.channels.find('name', config.logChannel);
+      if (!channel) return;
 
-    var embed = new Discord.RichEmbed()
-        .setColor(0x696969)
-        .setAuthor(client.user.username, client.user.avatarURL)
-        .setDescription(""+userMute+" was muted by "+message.author)
-        .setTimestamp()
+      var embed = new Discord.RichEmbed()
+          .setColor(0x696969)
+          .setAuthor(client.user.username, client.user.avatarURL)
+          .setDescription(target+" was muted by "+ message.author)
+          .setTimestamp()
 
-    channel.send({embed}).catch(console.error);
+      channel.send({embed}).catch(console.error);
+    }).catch(() => {
+          message.reply("an error has occured.").then(m => m.delete(5000))
+        });
 }
 
 if (command === 'unmute') {
     message.delete(0);
 
+    var target = message.mentions.members.first();
     var role = message.guild.roles.find("name", config.muteRole);
-    if (role == undefined || role == null) { // aborts if role doesn't exist
-        message.reply("this server doesn't have a \`"+ config.muteRole +"\` role.").then(m => m.delete(5000));
-        return;
-    }
 
-    var userUnmute = message.guild.member(message.mentions.users.first());
-    if (userUnmute == undefined  || userUnmute == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
+    if (role == undefined || role == null) return message.reply("this server doesn't have a \`"+ config.muteRole +"\` role.").then(m => m.delete(5000));
+    if (!target.roles.has(role.id)) return message.reply("this user is not muted.").then(m => m.delete(5000));
 
-    if (!userUnmute.roles.has(role.id)) return message.reply("this user is not muted.").then(m => m.delete(5000));
+    if (target == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
+    if (target.roles.has(modRole.id) || target.id === config.ownerID || target.id === client.id) return message.reply("I am not allowed to mute this user.").then(m => m.delete(5000));
 
-    userUnmute.removeRole(role).then((userUnmute) => {
-      message.channel.send("User has been unmuted.").then(m => m.delete(5000))
-      .catch(() => {
-        message.channel.send("An error has occured.").then(m => m.delete(5000))
-      })
+    target.removeRole(role).then((target) => {
+      message.channel.send(target.user.username +" has been unmuted.").then(m => m.delete(5000));
+
+      var channel = message.guild.channels.find('name', config.logChannel);
+      if (!channel) return;
+
+      var embed = new Discord.RichEmbed()
+          .setColor(0x696969)
+          .setAuthor(client.user.username, client.user.avatarURL)
+          .setDescription(target +" was unmuted by "+ message.author)
+          .setTimestamp()
+
+      channel.send({embed}).catch(console.error);
+      }).catch(() => {
+        message.reply("an error has occured.").then(m => m.delete(5000))
     });
-
-    var channel = message.guild.channels.find('name', config.logChannel); //searches for a channel named #member-log
-    if (!channel) return;  // if channel not found, abort
-
-    var embed = new Discord.RichEmbed()
-        .setColor(0x696969)
-        .setAuthor(client.user.username, client.user.avatarURL)
-        .setDescription(""+userUnmute+" was unmuted by "+message.author)
-        .setTimestamp()
-
-    channel.send({embed}).catch(console.error);
 }
 
 // Poll Commands
-if (command === "poll") { // $poll <title> § <description>
+if (command === "poll") { // $poll <title> | <description>
     message.delete(0);
 
-    var str = message.content.slice(config.prefix.length + 5).trim();
+    var str = message.content.slice(config.prefix.length + command.length + 2).trim();
     var arg = str.split("|");
     var title = arg[0];
     var desc = arg[1];
@@ -542,7 +562,7 @@ if (command === "poll") { // $poll <title> § <description>
 if (command === "epoll") { // $epoll <title> | <descrition> | <choice A> | <choice B> | etc. up to 5
     message.delete(0);
 
-    var str = message.content.slice(config.prefix.length + 6).trim();
+    var str = message.content.slice(config.prefix.length + command.length + 2).trim();
     var arg = str.split("|");
 
     if (arg[1] == undefined || arg[2] == undefined || arg[3] == undefined) {
@@ -698,28 +718,27 @@ if (command === 'version') {
     message.delete(0);
 
     message.channel.send("I am currently on version **"+ package.version +"**.").catch(console.error);
-
 }
 
 // Bot Cosmetic Commands
 if (command === 'setgame') {
     message.delete(0);
 
-    msgcontent = message.content.slice(config.prefix.length+7);
+    var msgcontent = message.content.slice(config.prefix.length + command.length + 2);
     client.user.setPresence({game:{name:''+msgcontent+'', type:0}}).catch(console.error);
 }
 
 if (command === 'setstatus') {
     message.delete(0);
 
-    msgcontent = message.content.slice(config.prefix.length+10);
+    var msgcontent = message.content.slice(config.prefix.length + command.length + 2);
     client.user.setStatus(msgcontent).catch(console.error);  //online, idle, dnd, invisible
 }
 
 if (command === 'setnickname') {
     message.delete(0);
 
-    msgcontent = message.content.substring(config.prefix.length+11);
+    var msgcontent = message.content.substring(config.prefix.length + command.length + 2);
     message.guild.member(client.user).setNickname(msgcontent).catch(console.error);
 }
 
@@ -729,6 +748,7 @@ if (command === 'reset') {
     client.user.setPresence({game:{name:config.prefix + "help", type:0}});
     client.user.setStatus("online");
     message.guild.member(client.user).setNickname('');
+    config.embedColor = "";
 }
 // End Bot Cosmetic Commands
 

@@ -2,8 +2,8 @@
   "token":"",
   "prefix":"",
   "ownerID":"",
-  "logChannel":"",
   "embedColor":"0x",
+  "logChannel":"",
   "modRole":"",
   "muteRole":""
 }
