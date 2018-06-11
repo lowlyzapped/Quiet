@@ -369,7 +369,7 @@ if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID
 if (command === 'say') { // $say <message>
     message.delete(0);
 
-    var msgcontent = message.content.slice(config.prefix.length + command.length + 2);
+    var msgcontent = message.content.slice(config.prefix.length + command.length);
     message.channel.send(msgcontent).catch(console.error);
 }
 
@@ -536,7 +536,7 @@ if (command === 'unmute') {
 if (command === "poll") { // $poll <title> | <description>
     message.delete(0);
 
-    var str = message.content.slice(config.prefix.length + command.length + 2).trim();
+    var str = message.content.slice(config.prefix.length + command.length).trim();
     var arg = str.split("|");
     var title = arg[0];
     var desc = arg[1];
@@ -562,7 +562,7 @@ if (command === "poll") { // $poll <title> | <description>
 if (command === "epoll") { // $epoll <title> | <descrition> | <choice A> | <choice B> | etc. up to 5
     message.delete(0);
 
-    var str = message.content.slice(config.prefix.length + command.length + 2).trim();
+    var str = message.content.slice(config.prefix.length + command.length).trim();
     var arg = str.split("|");
 
     if (arg[1] == undefined || arg[2] == undefined || arg[3] == undefined) {
@@ -724,21 +724,21 @@ if (command === 'version') {
 if (command === 'setgame') {
     message.delete(0);
 
-    var msgcontent = message.content.slice(config.prefix.length + command.length + 2);
+    var msgcontent = message.content.slice(config.prefix.length + command.length);
     client.user.setPresence({game:{name:''+msgcontent+'', type:0}}).catch(console.error);
 }
 
 if (command === 'setstatus') {
     message.delete(0);
 
-    var msgcontent = message.content.slice(config.prefix.length + command.length + 2);
+    var msgcontent = message.content.slice(config.prefix.length + command.length);
     client.user.setStatus(msgcontent).catch(console.error);  //online, idle, dnd, invisible
 }
 
 if (command === 'setnickname') {
     message.delete(0);
 
-    var msgcontent = message.content.substring(config.prefix.length + command.length + 2);
+    var msgcontent = message.content.substring(config.prefix.length + command.length);
     message.guild.member(client.user).setNickname(msgcontent).catch(console.error);
 }
 
