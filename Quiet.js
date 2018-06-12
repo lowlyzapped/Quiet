@@ -100,8 +100,6 @@ client.on('guildMemberRemove', member => {
            var channel = member.guild.channels.find('name', config.logChannel);
            if (!channel) return;
 
-           if (member.kick || member.ban) return;
-
            var embed = new Discord.RichEmbed()
                .setColor(0xe9890f)
                .setAuthor(client.user.username, client.user.avatarURL)
@@ -434,13 +432,17 @@ if (command === 'kick') { // $kick <@mention>
       var channel = message.guild.channels.find('name', config.logChannel);
       if (!channel) return;
 
-      var embed = new Discord.RichEmbed()
-          .setColor(0xff0000)
-          .setAuthor(client.user.username, client.user.avatarURL)
-          .setDescription("**"+ target.user.tag +"** was kicked by "+ message.author +".")
-          .setTimestamp()
+      channel.bulkDelete(1, false).then(() => {
+        var target = message.mentions.members.first();
 
-      channel.send({embed}).catch(console.error);
+        var embed = new Discord.RichEmbed()
+            .setColor(0xff0000)
+            .setAuthor(client.user.username, client.user.avatarURL)
+            .setDescription("**"+ target.user.tag +"** was kicked by "+ message.author +".")
+            .setTimestamp()
+
+        channel.send({embed}).catch(console.error);
+      })
     }).catch(() => {
         message.reply("an error has occured.").then(m => m.delete(5000))
       });
@@ -454,19 +456,23 @@ if (command === "ban") { // $ban <@mention>
 
     if (target.roles.has(modRole.id) || target.id === config.ownerID || target.id === client.id) return message.reply("I am not allowed to mute this user.").then(m => m.delete(5000));
 
-    target.ban().then((target) => {
+    target.ban(1).then((target) => {
       message.channel.send(target +" has been banned.").then(m => m.delete(5000));
 
-      var channel = member.guild.channels.find('name', config.logChannel);
+      var channel = message.guild.channels.find('name', config.logChannel);
       if (!channel) return;
 
-      var embed = new Discord.RichEmbed()
-          .setColor(0xff0000)
-          .setAuthor(client.user.username, client.user.avatarURL)
-          .setDescription("**"+ target.user.tag +"** was banned by "+ message.author +".")
-          .setTimestamp()
+      channel.bulkDelete(1, false).then(() => {
+        var target = message.mentions.members.first();
 
-      channel.send({embed}).catch(console.error);
+        var embed = new Discord.RichEmbed()
+            .setColor(0x000000)
+            .setAuthor(client.user.username, client.user.avatarURL)
+            .setDescription("**"+ target.user.tag +"** was banned by "+ message.author +".")
+            .setTimestamp()
+
+        channel.send({embed}).catch(console.error);
+      })
     }).catch(() => {
         message.reply("an error has occured.").then(m => m.delete(5000))
       });
