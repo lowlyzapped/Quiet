@@ -319,14 +319,14 @@ if (command === 'roll') { // roll a dice
 
     var total = Math.floor(dice * ((Math.random() * sides) + 1));
     if (total > Math.floor(dice * sides)) total = Math.floor(dice * sides);
-    message.channel.send("Rolled **" + dice + "** " + sides + "-sided dice and got **" + total + "**")
+    message.channel.send("Rolled **"+ dice +"** "+ sides +"-sided dice and got **"+ total +"**.")
       .then(m => m.delete(5000))
       .catch(console.error);
 }
 
 if (command === 'rps') { // rock paper scissor
     message.delete(5000);
-    if (args[0] != "rock" && args[0] != "paper" && args[0] != "scissors" && args[0] != "scissor" && args[0] != "r" && args[0] != "p" && args[0] != "s") {
+    if (args[0] != "rock" && args[0] != "paper" && args[0] != "scissors" && args[0] != "scissor") {
         message.reply("an error occured. Do `"+config.prefix+"rps <rock/paper/scissors>`");
         return;
     }
@@ -335,29 +335,29 @@ if (command === 'rps') { // rock paper scissor
     // rps: rock is 1, paper is 2 and scissors is 3
     if (rps === 1) {
         message.channel.send("Rock!").then(m => m.delete(5000));
-        if (args[0] == "rock" || args[0] == "r") message.channel.send("It's a tie, let's try again!")
+        if (args[0] == "rock") message.channel.send("It's a tie, let's try again!")
           .then(m => m.delete(5000));
-        if (args[0] == "paper" || args[0] == "p") message.channel.send("Paper beats rock, you win!")
+        if (args[0] == "paper") message.channel.send("Paper beats rock, you win!")
           .then(m => m.delete(5000));
-        if (args[0] == "scissors" || args[0] == "scissor" || args[0] == "s") message.channel.send("Rock beats scissors, I win!")
+        if (args[0] == "scissors" || args[0] == "scissor") message.channel.send("Rock beats scissors, I win!")
           .then(m => m.delete(5000));
     }
     if (rps === 2) {
         message.channel.send("Paper!").then(m => m.delete(5000));
-        if (args[0] == "rock" || args[0] == "r") message.channel.send("Paper beats rock, I win!")
+        if (args[0] == "rock") message.channel.send("Paper beats rock, I win!")
           .then(m => m.delete(5000));
-        if (args[0] == "paper" || args[0] == "p") message.channel.send("It's a tie, let's try again!")
+        if (args[0] == "paper") message.channel.send("It's a tie, let's try again!")
           .then(m => m.delete(5000));
-        if (args[0] == "scissors" || args[0] == "scissor" || args[0] == "s") message.channel.send("Scissors beat paper, you win!")
+        if (args[0] == "scissors" || args[0] == "scissor") message.channel.send("Scissors beat paper, you win!")
           .then(m => m.delete(5000));
     }
     if (rps === 3) {
         message.channel.send("Scissors!").then(m => m.delete(5000));
-        if (args[0] == "rock" || args[0] == "r") message.channel.send("Rock beats scissors, you win!")
+        if (args[0] == "rock") message.channel.send("Rock beats scissors, you win!")
           .then(m => m.delete(5000));
-        if (args[0] == "paper" || args[0] == "p") message.channel.send("Scissors beat paper, I win!")
+        if (args[0] == "paper") message.channel.send("Scissors beat paper, I win!")
           .then(m => m.delete(5000));
-        if (args[0] == "scissors" || args[0] == "scissor" || args[0] == "s") message.channel.send("It's a tie, let's try again!")
+        if (args[0] == "scissors" || args[0] == "scissor") message.channel.send("It's a tie, let's try again!")
           .then(m => m.delete(5000));
     }
 }
@@ -668,11 +668,11 @@ if (command === 'serverinfo') {
     var mins = date.getUTCMinutes();
     if (mins.toString().length == 1) mins = "0" + mins;
 
-    var str = '';
-    str += date.getUTCDate() + '/';
-    str += (date.getUTCMonth() + 1) + '/';
-    str += date.getUTCFullYear() + ' at ';
-    str += date.getUTCHours() + ':';
+    var str = "";
+    str += date.getUTCDate() + "/";
+    str += (date.getUTCMonth() + 1) + "/";
+    str += date.getUTCFullYear() + " at ";
+    str += date.getUTCHours() + ":";
     str += mins + " (UTC)";
     return str;
     }
@@ -762,7 +762,7 @@ if (command === 'reset') {
 
 if (message.author.id === config.ownerID) { // $!
     if (command === '!stop') { // STOP THE BOT
-        console.log(client.user.username + " has been deactivated.");
+        console.log(client.user.username +" has been deactivated.");
         process.exit(1); // Stop the bot, for real.
     }
 }
