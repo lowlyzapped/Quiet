@@ -2,16 +2,16 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const client = new Discord.Client();
 
-var config = require("./config.json");
-var package = require("./package.json")
+var config = require('./config.json');
+var package = require('./package.json')
 
 if (config.token == '' || config.prefix == '') {
-    console.log("Please fill in config.json");
+    console.log("Please fill in "config.json".");
     process.exit(1);
 }
 
-var https = require("https");
-var http = require("http");
+var https = require('https');
+var http = require('http');
 
 var rulesTextPath = "./files/rules.md";
 var welcomeTextPath = "./files/welcome.md";
@@ -19,22 +19,22 @@ var welcomeTextPath = "./files/welcome.md";
 var linksPath = "./files/links.json";
 var linksConfig = null;
 
-var helpBTextPath = "./files/help/helpBasic.md"; // TODO make this into a seperate file ???
+var helpBTextPath = "./files/help/helpBasic.md"; // TODO make this into a seperate file
 var helpBCTextPath = "./files/help/helpBotCosmetic.md";
 var helpMTextPath = "./files/help/helpMod.md";
 var helpOTextPath = "./files/help/helpOwner.md";
 var helpPTextPath = "./files/help/helpPoll.md";
 
 if (!fs.existsSync(helpBTextPath)) {
-    console.log("The file " + helpBTextPath + " does not exist. The "+config.prefix+"help command will be disabled.");
+    console.log("The file \""+ helpBTextPath +"\" does not exist. The "+config.prefix+"help command will be disabled.");
 }
 
 if (!fs.existsSync(welcomeTextPath)) {
-    console.log("The file " + welcomeTextPath + " does not exist. Welcome messages upon members joining will not be sent.");
+    console.log("The file \""+ welcomeTextPath +"\" does not exist. No text will be sent on members' arrival.");
 }
 
 if (!fs.existsSync(rulesTextPath)) {
-    console.log("The file " + rulesTextPath + " does not exist. The "+config.prefix+"rules command will be disabled.");
+    console.log("The file \""+ rulesTextPath +"\" does not exist. The "+config.prefix+"rules command will be disabled.");
 }
 
 if (fs.existsSync(linksPath)) {
@@ -46,11 +46,11 @@ if (fs.existsSync(linksPath)) {
         }
     });
 } else {
-    console.log("The file " + linksPath + " does not exist. This may cause errors.");
+    console.log("The file \""+ linksPath +"\" does not exist. The "+config.prefix+"link command will be disabled.");
 }
 
 client.on('ready', () => {
-          console.log(client.user.username + " v"+ package.version +" online.");
+          console.log(client.user.username +" v"+ package.version +" online.");
           client.user.setStatus('online'); //online, idle, dnd, invisible
           client.user.setPresence({game:{name:config.prefix+"help | v"+ package.version, type:0}});
 });
@@ -58,16 +58,16 @@ client.on('ready', () => {
 client.on('error', (err) => console.error(err));
 
 client.on('guildMemberAdd', member => { // when a member joins the server
-          var channel = member.guild.channels.find('name', config.logChannel); //searches for a channel named #member-log
-          if (!channel) return;  // if channel not found, abort
+          var logChannel = member.guild.channels.find("name", config.logChannel); //searches for a channel named #member-log
+          if (!logChannel) return;  // if channel not found, abort
 
           var embed = new Discord.RichEmbed()
               .setColor(0x18bb68)
               .setAuthor(client.user.username, client.user.avatarURL)
-              .setDescription(""+member.user+" joined the server.")
+              .setDescription(member.user+" joined the server.")
               .setTimestamp()
 
-          channel.send({embed}).catch(console.error);
+          logChannel.send({embed}).catch(console.error);
 
           if (!fs.existsSync(welcomeTextPath)) {
               return;
@@ -97,8 +97,8 @@ client.on('guildMemberAdd', member => { // when a member joins the server
 });
 
 client.on('guildMemberRemove', member => {
-           var channel = member.guild.channels.find('name', config.logChannel);
-           if (!channel) return;
+           var logChannel = member.guild.channels.find("name", config.logChannel);
+           if (!logChannel) return;
 
            var embed = new Discord.RichEmbed()
                .setColor(0xe9890f)
@@ -106,7 +106,7 @@ client.on('guildMemberRemove', member => {
                .setDescription("**"+member.user.username+"#"+member.user.discriminator+"** left the server.")
                .setTimestamp()
 
-           channel.send({embed}).catch(console.error);
+           logChannel.send({embed}).catch(console.error);
 });
 
 client.on('message', message => {  // message function
@@ -253,6 +253,8 @@ if (command === 'servericon') {
 
 if (command === 'link') {
     message.delete(0);
+
+    if (!fs.existsSync(linksPath)) return;
 
     var links = linksConfig.links;
 
@@ -429,10 +431,10 @@ if (command === 'kick') { // $kick <@mention>
     target.kick().then((target) => { //kicks member @mentionned
       message.channel.send(target +" has been kicked.").then(m => m.delete(5000));
 
-      var channel = message.guild.channels.find('name', config.logChannel);
-      if (!channel) return;
+      var logChannel = message.guild.channels.find("name", config.logChannel);
+      if (!logChannel) return;
 
-      channel.bulkDelete(1, false).then(() => {
+      logChannel.bulkDelete(1, false).then(() => {
         var target = message.mentions.members.first();
 
         var embed = new Discord.RichEmbed()
@@ -441,7 +443,7 @@ if (command === 'kick') { // $kick <@mention>
             .setDescription("**"+ target.user.tag +"** was kicked by "+ message.author +".")
             .setTimestamp()
 
-        channel.send({embed}).catch(console.error);
+        logChannel.send({embed}).catch(console.error);
       })
     }).catch(() => {
         message.reply("an error has occured.").then(m => m.delete(5000))
@@ -459,10 +461,10 @@ if (command === "ban") { // $ban <@mention>
     target.ban(1).then((target) => {
       message.channel.send(target +" has been banned.").then(m => m.delete(5000));
 
-      var channel = message.guild.channels.find('name', config.logChannel);
-      if (!channel) return;
+      var logChannel = message.guild.channels.find("name", config.logChannel);
+      if (!logChannel) return;
 
-      channel.bulkDelete(1, false).then(() => {
+      logChannel.bulkDelete(1, false).then(() => {
         var target = message.mentions.members.first();
 
         var embed = new Discord.RichEmbed()
@@ -471,7 +473,7 @@ if (command === "ban") { // $ban <@mention>
             .setDescription("**"+ target.user.tag +"** was banned by "+ message.author +".")
             .setTimestamp()
 
-        channel.send({embed}).catch(console.error);
+        logChannel.send({embed}).catch(console.error);
       })
     }).catch(() => {
         message.reply("an error has occured.").then(m => m.delete(5000))
@@ -493,8 +495,8 @@ if (command === 'mute') {
     target.addRole(role).then((target) => {
       message.channel.send(target.user.username +" has been muted.").then(m => m.delete(5000));
 
-      var channel = message.guild.channels.find('name', config.logChannel);
-      if (!channel) return;
+      var logChannel = message.guild.channels.find("name", config.logChannel);
+      if (!logChannel) return;
 
       var embed = new Discord.RichEmbed()
           .setColor(0x696969)
@@ -502,7 +504,7 @@ if (command === 'mute') {
           .setDescription(target+" was muted by "+ message.author)
           .setTimestamp()
 
-      channel.send({embed}).catch(console.error);
+      logChannel.send({embed}).catch(console.error);
     }).catch(() => {
           message.reply("an error has occured.").then(m => m.delete(5000))
         });
@@ -523,8 +525,8 @@ if (command === 'unmute') {
     target.removeRole(role).then((target) => {
       message.channel.send(target.user.username +" has been unmuted.").then(m => m.delete(5000));
 
-      var channel = message.guild.channels.find('name', config.logChannel);
-      if (!channel) return;
+      var logChannel = message.guild.channels.find("name", config.logChannel);
+      if (!logChannel) return;
 
       var embed = new Discord.RichEmbed()
           .setColor(0x696969)
@@ -532,7 +534,7 @@ if (command === 'unmute') {
           .setDescription(target +" was unmuted by "+ message.author)
           .setTimestamp()
 
-      channel.send({embed}).catch(console.error);
+      logChannel.send({embed}).catch(console.error);
       }).catch(() => {
         message.reply("an error has occured.").then(m => m.delete(5000))
     });
