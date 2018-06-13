@@ -426,7 +426,7 @@ if (command === 'kick') { // $kick <@mention>
     var target = message.mentions.members.first();
     if (target == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
 
-    if (target.roles.has(modRole.id) || target.id === config.ownerID || target.id === client.id) return message.reply("I am not allowed to mute this user.").then(m => m.delete(5000));
+    if (target.roles.has(modRole.id) || target.id === config.ownerID || target.id === client.id) return message.reply("I am not allowed to kick this user.").then(m => m.delete(5000));
 
     target.kick().then((target) => { //kicks member @mentionned
       message.channel.send(target +" has been kicked.").then(m => m.delete(5000));
@@ -456,7 +456,7 @@ if (command === "ban") { // $ban <@mention>
     var target = message.mentions.members.first();
     if (target == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
 
-    if (target.roles.has(modRole.id) || target.id === config.ownerID || target.id === client.id) return message.reply("I am not allowed to mute this user.").then(m => m.delete(5000));
+    if (target.roles.has(modRole.id) || target.id === config.ownerID || target.id === client.id) return message.reply("I am not allowed to ban this user.").then(m => m.delete(5000));
 
     target.ban(1).then((target) => {
       message.channel.send(target +" has been banned.").then(m => m.delete(5000));
@@ -520,7 +520,7 @@ if (command === 'unmute') {
     if (!target.roles.has(role.id)) return message.reply("this user is not muted.").then(m => m.delete(5000));
 
     if (target == null) return message.reply("no user was mentionned.").then(m => m.delete(5000));
-    if (target.roles.has(modRole.id) || target.id === config.ownerID || target.id === client.id) return message.reply("I am not allowed to mute this user.").then(m => m.delete(5000));
+    if (target.roles.has(modRole.id) || target.id === config.ownerID || target.id === client.id) return message.reply("I am not allowed to unmute this user.").then(m => m.delete(5000));
 
     target.removeRole(role).then((target) => {
       message.channel.send(target.user.username +" has been unmuted.").then(m => m.delete(5000));
