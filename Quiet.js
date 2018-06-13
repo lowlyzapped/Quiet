@@ -6,7 +6,7 @@ var config = require('./config.json');
 var package = require('./package.json')
 
 if (config.token == '' || config.prefix == '') {
-    console.log("Please fill in "config.json".");
+    console.log('Please fill in "config.json".');
     process.exit(1);
 }
 
