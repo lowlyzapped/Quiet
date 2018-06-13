@@ -2,13 +2,16 @@ const Discord = require('discord.js');
 const fs = require('fs');
 const client = new Discord.Client();
 
-var config = require('./config.json');
-var package = require('./package.json')
+var config = require("./config.json");
+var package = require("./package.json")
 
 if (config.token == '' || config.prefix == '') {
-    console.log('Please fill in config.json');
+    console.log("Please fill in config.json");
     process.exit(1);
 }
+
+var https = require("https");
+var http = require("http");
 
 var rulesTextPath = "./files/rules.md";
 var welcomeTextPath = "./files/welcome.md";
@@ -21,9 +24,6 @@ var helpBCTextPath = "./files/help/helpBotCosmetic.md";
 var helpMTextPath = "./files/help/helpMod.md";
 var helpOTextPath = "./files/help/helpOwner.md";
 var helpPTextPath = "./files/help/helpPoll.md";
-
-var https = require('https');
-var http = require('http');
 
 if (!fs.existsSync(helpBTextPath)) {
     console.log("The file " + helpBTextPath + " does not exist. The "+config.prefix+"help command will be disabled.");
@@ -754,7 +754,6 @@ if (command === 'reset') {
     client.user.setPresence({game:{name:config.prefix + "help", type:0}});
     client.user.setStatus("online");
     message.guild.member(client.user).setNickname('');
-    config.embedColor = "";
 }
 // End Bot Cosmetic Commands
 
