@@ -65,7 +65,7 @@ client.on('guildMemberAdd', member => { // when a member joins the server
               .setColor(0x18bb68)
               .setAuthor("Member Joined", member.user.avatarURL)
               .setDescription(member.user +" | "+ member.user.tag)
-              .setFooter("Member no. "+ message.guild.memberCount)
+              .setFooter("Member no. "+ member.guild.memberCount)
               .setTimestamp()
 
           logChannel.send({embed}).catch(console.error);
