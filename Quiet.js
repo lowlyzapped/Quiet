@@ -63,8 +63,9 @@ client.on('guildMemberAdd', member => { // when a member joins the server
 
           var embed = new Discord.RichEmbed()
               .setColor(0x18bb68)
-              .setAuthor(client.user.username, client.user.avatarURL)
-              .setDescription(member.user+" joined the server.")
+              .setAuthor("Member Joined", member.user.avatarURL)
+              .setDescription(member.user +" | "+ member.user.tag)
+              .setFooter("Member no. "+ message.guild.memberCount)
               .setTimestamp()
 
           logChannel.send({embed}).catch(console.error);
@@ -75,7 +76,7 @@ client.on('guildMemberAdd', member => { // when a member joins the server
               fs.readFile(welcomeTextPath, 'utf8', (err, welcomeText) => {
                   if (err) return console.log(err);
 
-                  member.send("Hello "+member.user.username+"! "+ welcomeText);
+                  member.send("Hello "+ member.user.username +"! "+ welcomeText);
               });
           }
 
@@ -102,8 +103,8 @@ client.on('guildMemberRemove', member => {
 
            var embed = new Discord.RichEmbed()
                .setColor(0xe9890f)
-               .setAuthor(client.user.username, client.user.avatarURL)
-               .setDescription("**"+member.user.username+"#"+member.user.discriminator+"** left the server.")
+               .setAuthor("Member Left", member.user.avatarURL)
+               .setDescription(member.user +" | "+ member.user.tag)
                .setTimestamp()
 
            logChannel.send({embed}).catch(console.error);
@@ -439,8 +440,9 @@ if (command === 'kick') { // $kick <@mention>
 
         var embed = new Discord.RichEmbed()
             .setColor(0xff0000)
-            .setAuthor(client.user.username, client.user.avatarURL)
-            .setDescription("**"+ target.user.tag +"** was kicked by "+ message.author +".")
+            .setAuthor("Member Kicked", target.user.avatarURL)
+            .setDescription(targettarget.user +" | "+ targettarget.user.tag +
+                            "\nKicked by: "+ message.author)
             .setTimestamp()
 
         logChannel.send({embed}).catch(console.error);
@@ -469,8 +471,9 @@ if (command === "ban") { // $ban <@mention>
 
         var embed = new Discord.RichEmbed()
             .setColor(0x000000)
-            .setAuthor(client.user.username, client.user.avatarURL)
-            .setDescription("**"+ target.user.tag +"** was banned by "+ message.author +".")
+            .setAuthor("Member Banned", targettarget.user.avatarURL)
+            .setDescription(targettarget.user +" | "+ targettarget.user.tag +
+                            "\nBanned by: "+ message.author)
             .setTimestamp()
 
         logChannel.send({embed}).catch(console.error);
@@ -500,8 +503,9 @@ if (command === 'mute') {
 
       var embed = new Discord.RichEmbed()
           .setColor(0x696969)
-          .setAuthor(client.user.username, client.user.avatarURL)
-          .setDescription(target+" was muted by "+ message.author)
+          .setAuthor("Member Muted", target.user.avatarURL)
+          .setDescription(target.user +" | "+ target.user.tag +
+                          "\nMuted by: "+ message.author)
           .setTimestamp()
 
       logChannel.send({embed}).catch(console.error);
@@ -530,8 +534,9 @@ if (command === 'unmute') {
 
       var embed = new Discord.RichEmbed()
           .setColor(0x696969)
-          .setAuthor(client.user.username, client.user.avatarURL)
-          .setDescription(target +" was unmuted by "+ message.author)
+          .setAuthor("Member Unmuted", target.user.avatarURL)
+          .setDescription(target.user +" | "+ target.user.tag +
+                          "\nUnmuted by: "+ message.author)
           .setTimestamp()
 
       logChannel.send({embed}).catch(console.error);
