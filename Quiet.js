@@ -441,7 +441,7 @@ if (command === 'kick') { // $kick <@mention>
         var embed = new Discord.RichEmbed()
             .setColor(0xff0000)
             .setAuthor("Member Kicked", target.user.avatarURL)
-            .setDescription(targettarget.user +" | "+ targettarget.user.tag +
+            .setDescription(target.user +" | "+ target.user.tag +
                             "\nKicked by: "+ message.author)
             .setTimestamp()
 
@@ -471,8 +471,8 @@ if (command === "ban") { // $ban <@mention>
 
         var embed = new Discord.RichEmbed()
             .setColor(0x000000)
-            .setAuthor("Member Banned", targettarget.user.avatarURL)
-            .setDescription(targettarget.user +" | "+ targettarget.user.tag +
+            .setAuthor("Member Banned", target.user.avatarURL)
+            .setDescription(target.user +" | "+ target.user.tag +
                             "\nBanned by: "+ message.author)
             .setTimestamp()
 
