@@ -4,14 +4,15 @@ Created by TheV0rtex.
 # Setting it up
 To get Quiet's awesome code working on your own bot, simply follow these steps:
 
-1. Rename `config.json.example` to `config.json`.
-2. Fill in the config file.
+1. Run `$ node Initializer.js`.
+2. Fill in the "config.json" file generated.
 3. Run `$ node Quiet.js`.
 
 # Text files
-If you wish to use the `$rules` command, simply rename `rules.md.example` to `rules.md` and fill it in.
-Same goes with the `welcome.md.example` file, if you want your bot to send a welcome message when a member joins your server.
-Do the same with `points.json.example`. There is already a link set by default, serving as a template.
+In order for the `$rules` and `$link` commands, as well as the welcome message to work, simply fill in:
+- "rules.md", located in the "files" folder.
+- "welcome.md", located in the "files" folder.
+- "links.json", located int he files folder.
 
 # New features
 I will updating Quiet whenever I have major command breakthroughs. If you have any interesting new features you'd like to see implemented in Quiet, you are warmly welcomed to make a **pull request** on this repo.
