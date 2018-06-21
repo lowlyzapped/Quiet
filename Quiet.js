@@ -26,7 +26,7 @@ var helpOTextPath = "./files/help/helpOwner.md";
 var helpPTextPath = "./files/help/helpPoll.md";
 
 if (!fs.existsSync(helpBTextPath)) {
-    console.log("The file \""+ helpBTextPath +"\" does not exist. The "+config.prefix+"help command will be disabled.");
+    console.log("The file \""+ helpBTextPath +"\" does not exist. The "+ config.prefix +"help command will be disabled.");
 }
 
 if (!fs.existsSync(welcomeTextPath)) {
@@ -34,7 +34,7 @@ if (!fs.existsSync(welcomeTextPath)) {
 }
 
 if (!fs.existsSync(rulesTextPath)) {
-    console.log("The file \""+ rulesTextPath +"\" does not exist. The "+config.prefix+"rules command will be disabled.");
+    console.log("The file \""+ rulesTextPath +"\" does not exist. The "+ config.prefix +"rules command will be disabled.");
 }
 
 if (fs.existsSync(linksPath)) {
@@ -46,13 +46,13 @@ if (fs.existsSync(linksPath)) {
         }
     });
 } else {
-    console.log("The file \""+ linksPath +"\" does not exist. The "+config.prefix+"link command will be disabled.");
+    console.log("The file \""+ linksPath +"\" does not exist. The "+ config.prefix +"link command will be disabled.");
 }
 
 client.on('ready', () => {
           console.log(client.user.username +" v"+ package.version +" online.");
           client.user.setStatus('online'); //online, idle, dnd, invisible
-          client.user.setPresence({game:{name:config.prefix+"help | v"+ package.version, type:0}});
+          client.user.setPresence({game:{name:config.prefix +"help | v"+ package.version, type:0}});
 });
 
 client.on('error', (err) => console.error(err));
