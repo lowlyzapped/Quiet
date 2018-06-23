@@ -5,6 +5,7 @@ config.json
 files/rules.md
 files/welcome.md
 
+files/birthdays.json
 files/links.json
 
 *.bat

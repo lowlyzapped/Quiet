@@ -19,6 +19,10 @@ var welcomeTextPath = "./files/welcome.md";
 var linksPath = "./files/links.json";
 var linksConfig = null;
 
+var birthdaysPath = "./files/birthdays.json";
+var birthdaysConfig = null;
+
+
 var helpBTextPath = "./files/help/helpBasic.md"; // TODO make this into a seperate file
 var helpBCTextPath = "./files/help/helpBotCosmetic.md";
 var helpMTextPath = "./files/help/helpMod.md";
@@ -47,6 +51,17 @@ if (fs.existsSync(linksPath)) {
     });
 } else {
     console.log("The file \""+ linksPath +"\" does not exist. The "+config.prefix+"link command will be disabled.");
+}
+if (fs.existsSync(birthdaysPath)) {
+    fs.readFile(birthdaysPath, 'utf8', (e, data) => {
+        try {
+            birthdaysConfig = JSON.parse(data);
+        } catch (e) {
+            console.log(e);
+        }
+    });
+} else {
+    console.log("The file \""+ birtdaysPath +"\" does not exist. The "+config.prefix+"birthday command will be disabled.");
 }
 
 client.on('ready', () => {
@@ -621,6 +636,14 @@ if (command === "epoll") { // $epoll <title> | <descrition> | <choice A> | <choi
           }).catch(console.error);
 }
 // End Poll Commands
+
+if (command === 'birthday') {
+    if (args[0] == null || args[1] == null) return message.reply("please enter a valid date. `DD MM`.").then(m => m.delete(5000));
+
+    var date = new Date(2001, args[1], args[0]);
+
+    message.channel.send(date.getDate() +"/" +date.getMonth());
+}
 
 } // End Mod Commands
 
