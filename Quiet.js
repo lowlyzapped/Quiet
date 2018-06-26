@@ -730,7 +730,7 @@ if (command === 'serverinfo') {
 if (command === 'version') {
     message.delete(0);
 
-    message.channel.send("I am currently on version **"+ package.version +"**.").catch(console.error);
+    message.channel.send("I am currently on version **"+ package.version +"**.").catch(console.error).then(m => m.delete(5000));
 }
 
 // Bot Cosmetic Commands
