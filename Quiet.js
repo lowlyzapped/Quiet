@@ -90,7 +90,7 @@ client.on('guildMemberAdd', member => { // when a member joins the server
                       .setColor(config.embedColor)
                       .setAuthor(member.guild.name+" Rules", member.guild.iconURL)
                       .setDescription(rulesText)
-                      .setFooter("Powered by "+client.user.username+"™")
+                      .setFooter("Powered by "+ client.user.username +"™")
 
                   member.send({embed}).catch(console.error);
               });
@@ -193,7 +193,7 @@ if (command === "rules") {
         .setColor(config.embedColor)
         .setAuthor(message.guild.name+" Rules", message.guild.iconURL)
         .setDescription(rulesText)
-        .setFooter("Powered by "+client.user.username+"™")
+        .setFooter("Powered by "+ client.user.username +"™")
 
     message.reply('rules have been sent.')
         .then(m => m.delete(5000));
@@ -233,7 +233,7 @@ if (command === 'avatar') {
         .setColor(0x696799)
         .setDescription('[Direct Link](' + message.author.avatarURL + ')')
         .setImage(message.author.avatarURL)
-        .setFooter('Powered by '+client.user.username+'™')
+        .setFooter("Powered by "+ client.user.username +"™")
 
     message.reply('your avatar:');
     message.channel.send({embed}).catch(console.error);
@@ -247,7 +247,7 @@ if (command === 'servericon') {
         .setTitle(message.guild.name+"'s icon!")
         .setDescription("[Direct Link]("+message.guild.iconURL+")")
         .setImage(message.guild.iconURL)
-        .setFooter("Powered by "+client.user.username+"™")
+        .setFooter("Powered by "+ client.user.username +"™")
 
     message.channel.send({embed}).catch(console.error);
 }
@@ -263,7 +263,7 @@ if (command === 'link') {
         var embed = new Discord.RichEmbed()
             .setColor(config.embedColor)
             .setTitle("All Links")
-            .setFooter("Powered by "+client.user.username+"™")
+            .setFooter("Powered by "+ client.user.username +"™")
 
         var text = "";
         for (var i = 0; i < links.length; i++) {
@@ -292,7 +292,7 @@ if (command === 'link') {
         .setAuthor("Link: "+ links[x].name.toLowerCase())
         .setTitle(links[x].link)
         .setDescription(links[x].description)
-        .setFooter("Powered by "+client.user.username+"™")
+        .setFooter("Powered by "+ client.user.username +"™")
 
         message.channel.send({embed}).catch(console.error);
 }
@@ -667,7 +667,7 @@ if (command === 'serverinfo') {
         .addField("Verification Level:", getVerification(guild))
         .addField("Member Count:", guild.memberCount)
         .addField("Channels:", getChannels(guild))
-        .setFooter("Powered by "+client.user.username+"™")
+        .setFooter("Powered by "+ client.user.username +"™")
 
     message.channel.send({embed}).catch(console.error);
 
