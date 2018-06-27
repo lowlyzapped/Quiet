@@ -283,7 +283,7 @@ if (command === 'link') {
 
     if (x == null) {
         var linkName = args[0].toLowerCase();
-        message.reply("the link `"+ linkName +"` doesn't exist.");
+        message.reply("the link `"+ linkName +"` doesn't exist.").then(m => m.delete(5000));
         return;
     }
 
