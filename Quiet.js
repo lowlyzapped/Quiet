@@ -638,11 +638,23 @@ if (command === "epoll") { // $epoll <title> | <descrition> | <choice A> | <choi
 // End Poll Commands
 
 if (command === 'birthday') {
-    if (args[0] == null || args[1] == null) return message.reply("please enter a valid date. `DD MM`.").then(m => m.delete(5000));
+    var str = message.content.slice(config.prefix.length + command.length).trim();
+    var input = str.split("/");
 
-    var date = new Date(2001, args[1], args[0]);
+    if (input[0] == null || input[1] == null) return message.reply("please enter a valid date. `DD/MM`.").then(m => m.delete(5000));
 
-    message.channel.send(date.getDate() +"/" +date.getMonth());
+    if (input[0] <= 0 || input[0] >= 32) return message.reply("invalid date: "+ input[0]); // 1 to 31 days
+    if (input[1] <= 0 || input[1] >= 13) return message.reply("invalid month: "+ input[1]); // 1 to 12 months
+
+    if (input[1] == 4 || input[1] == 6 || input[1] == 9 || input[1] == 11) { // 30 days in these months
+        if (input[0] >= 31) return message.reply("invalid date: "+ input[0]);
+    }
+
+    if (input[1] == 2) {
+        if (input[0] >= 29) return message.reply("invalid date: "+ input[0]);
+    }
+
+    message.channel.send(input[0] +"/"+ input[1]);
 }
 
 } // End Mod Commands
