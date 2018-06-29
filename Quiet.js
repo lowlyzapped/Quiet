@@ -638,23 +638,35 @@ if (command === "epoll") { // $epoll <title> | <descrition> | <choice A> | <choi
 // End Poll Commands
 
 if (command === 'birthday') {
+    // message.delete(0);
+
     var str = message.content.slice(config.prefix.length + command.length).trim();
     var input = str.split("/");
 
-    if (input[0] == null || input[1] == null) return message.reply("please enter a valid date. `DD/MM`.").then(m => m.delete(5000));
+    var date = input[0];
+    var month = input[1];
 
-    if (input[0] <= 0 || input[0] >= 32) return message.reply("invalid date: "+ input[0]); // 1 to 31 days
-    if (input[1] <= 0 || input[1] >= 13) return message.reply("invalid month: "+ input[1]); // 1 to 12 months
+    if (date == null || month == null) return message.reply("please enter a valid date. `DD/MM`.").then(m => m.delete(5000));
 
-    if (input[1] == 4 || input[1] == 6 || input[1] == 9 || input[1] == 11) { // 30 days in these months
-        if (input[0] >= 31) return message.reply("invalid date: "+ input[0]);
+    if (date <= 0 || date >= 32) return message.reply("invalid date: "+ date); // 1 to 31 days    // DEBUG
+    if (month <= 0 || month >= 13) return message.reply("invalid month: "+ month); // 1 to 12 months    // DEBUG
+
+    if (month == 2) {
+        if (date >= 29) return message.reply("invalid date: "+ date +".\nReason: `February`"); // DEBUG
     }
 
-    if (input[1] == 2) {
-        if (input[0] >= 29) return message.reply("invalid date: "+ input[0]);
+    if (date >= 31) {
+        var oddMonth = [4,6,9,11]; // 30 days in these months
+        if (month = oddMonth) {
+            month = oddMonth;
+            if (oddMonth.some(month => !message.content.includes(month))) return message.reply("invalid date: "+ date +".\nReason: `Odd Month`"); // DEBUG
+        }
     }
 
-    message.channel.send(input[0] +"/"+ input[1]);
+    if (month.toString().length == 1) month = "0"+ month;
+    if (date.toString().length == 1) date = "0"+ date;
+
+    message.channel.send(date +"/"+ month);
 }
 
 } // End Mod Commands
