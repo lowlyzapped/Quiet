@@ -195,7 +195,7 @@ if (command === "rules") {
         .setDescription(rulesText)
         .setFooter("Powered by "+ client.user.username +"™")
 
-    message.reply('rules have been sent.')
+    message.reply("rules have been sent.")
         .then(m => m.delete(5000));
 
     message.author.send({embed})
@@ -231,11 +231,11 @@ if (command === 'avatar') {
 
     var embed = new Discord.RichEmbed()
         .setColor(0x696799)
-        .setDescription('[Direct Link](' + message.author.avatarURL + ')')
+        .setDescription("[Direct Link](" + message.author.avatarURL + ")")
         .setImage(message.author.avatarURL)
         .setFooter("Powered by "+ client.user.username +"™")
 
-    message.reply('your avatar:');
+    message.reply("your avatar:");
     message.channel.send({embed}).catch(console.error);
 }
 
@@ -244,7 +244,7 @@ if (command === 'servericon') {
 
     var embed = new Discord.RichEmbed()
         .setColor(config.embedColor)
-        .setTitle(message.guild.name+"'s icon!")
+        .setTitle(message.guild.name +"'s icon!")
         .setDescription("[Direct Link]("+message.guild.iconURL+")")
         .setImage(message.guild.iconURL)
         .setFooter("Powered by "+ client.user.username +"™")
@@ -388,9 +388,9 @@ if (command === 'memberlist') { // $memberlist
     var streamerRole = message.guild.roles.find("name", "Streamer");
 
     message.channel.send("There are currently **"+ message.guild.memberCount +"** members on this server:\n"+
-                          "**Moderators**: "+modRole.members.keyArray().length+"\n"+
-                          "**YouTubers**: "+youtuberRole.members.keyArray().length+"\n"+
-                          "**Streamers**: "+streamerRole.members.keyArray().length)
+                          "**Moderators**: "+ modRole.members.keyArray().length +"\n"+
+                          "**YouTubers**: "+ youtuberRole.members.keyArray().length +"\n"+
+                          "**Streamers**: "+ streamerRole.members.keyArray().length)
       .catch(console.error);
 }
 
@@ -771,7 +771,7 @@ if (command === 'reset') {
     message.delete(0);
 
     client.user.setPresence({game:{name:config.prefix +"help", type:0}, status: "online"});
-    message.guild.member(client.user).setNickname('');
+    message.guild.member(client.user).setNickname("");
 }
 // End Bot Cosmetic Commands
 
