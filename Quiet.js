@@ -51,14 +51,8 @@ if (fs.existsSync(linksPath)) {
 
 client.on('ready', () => {
           console.log(client.user.username +" v"+ package.version +" online.");
-<<<<<<< HEAD
-          client.user.setStatus('online'); //online, idle, dnd, invisible
-          client.user.setPresence({game:{name:config.prefix+"help | v"+ package.version, type:0}});
-=======
           client.user.setStatus("online"); //online, idle, dnd, invisible
           client.user.setPresence({game:{name:config.prefix +"help | v"+ package.version, type:0}});
->>>>>>> release-2.1
-});
 
 client.on('error', (err) => console.error(err));
 
