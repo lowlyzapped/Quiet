@@ -26,7 +26,7 @@ var helpOTextPath = "./files/help/helpOwner.md";
 var helpPTextPath = "./files/help/helpPoll.md";
 
 if (!fs.existsSync(helpBTextPath)) {
-    console.log("The file \""+ helpBTextPath +"\" does not exist. The "+ config.prefix +"help command will be disabled.");
+    console.log("The file \""+ helpBTextPath +"\" does not exist. The "+config.prefix+"help command will be disabled.");
 }
 
 if (!fs.existsSync(welcomeTextPath)) {
@@ -34,7 +34,7 @@ if (!fs.existsSync(welcomeTextPath)) {
 }
 
 if (!fs.existsSync(rulesTextPath)) {
-    console.log("The file \""+ rulesTextPath +"\" does not exist. The "+ config.prefix +"rules command will be disabled.");
+    console.log("The file \""+ rulesTextPath +"\" does not exist. The "+config.prefix+"rules command will be disabled.");
 }
 
 if (fs.existsSync(linksPath)) {
@@ -46,13 +46,18 @@ if (fs.existsSync(linksPath)) {
         }
     });
 } else {
-    console.log("The file \""+ linksPath +"\" does not exist. The "+ config.prefix +"link command will be disabled.");
+    console.log("The file \""+ linksPath +"\" does not exist. The "+config.prefix+"link command will be disabled.");
 }
 
 client.on('ready', () => {
           console.log(client.user.username +" v"+ package.version +" online.");
+<<<<<<< HEAD
           client.user.setStatus('online'); //online, idle, dnd, invisible
+          client.user.setPresence({game:{name:config.prefix+"help | v"+ package.version, type:0}});
+=======
+          client.user.setStatus("online"); //online, idle, dnd, invisible
           client.user.setPresence({game:{name:config.prefix +"help | v"+ package.version, type:0}});
+>>>>>>> release-2.1
 });
 
 client.on('error', (err) => console.error(err));
@@ -90,7 +95,7 @@ client.on('guildMemberAdd', member => { // when a member joins the server
                       .setColor(config.embedColor)
                       .setAuthor(member.guild.name+" Rules", member.guild.iconURL)
                       .setDescription(rulesText)
-                      .setFooter("Powered by "+ client.user.username +"™")
+                      .setFooter("Powered by "+client.user.username+"™")
 
                   member.send({embed}).catch(console.error);
               });
@@ -112,7 +117,7 @@ client.on('guildMemberRemove', member => {
 
 client.on('message', message => {  // message function
 
-if (message.channel.type === 'dm' && message.content.startsWith(config.prefix)) { //if a message sent in DM starts with $
+if (message.channel.type === "dm" && message.content.startsWith(config.prefix)) { //if a message sent in DM starts with $
     message.author.send("**ACCESS DENIED**\nCan't perform commands in DM."); //denies everything
     return;
 }
@@ -193,9 +198,9 @@ if (command === "rules") {
         .setColor(config.embedColor)
         .setAuthor(message.guild.name+" Rules", message.guild.iconURL)
         .setDescription(rulesText)
-        .setFooter("Powered by "+ client.user.username +"™")
+        .setFooter("Powered by "+client.user.username+"™")
 
-    message.reply('rules have been sent.')
+    message.reply("rules have been sent.")
         .then(m => m.delete(5000));
 
     message.author.send({embed})
@@ -231,11 +236,11 @@ if (command === 'avatar') {
 
     var embed = new Discord.RichEmbed()
         .setColor(0x696799)
-        .setDescription('[Direct Link](' + message.author.avatarURL + ')')
+        .setDescription("[Direct Link](" + message.author.avatarURL + ")")
         .setImage(message.author.avatarURL)
-        .setFooter("Powered by "+ client.user.username +"™")
+        .setFooter('Powered by '+client.user.username+'™')
 
-    message.reply('your avatar:');
+    message.reply("your avatar:");
     message.channel.send({embed}).catch(console.error);
 }
 
@@ -247,7 +252,7 @@ if (command === 'servericon') {
         .setTitle(message.guild.name+"'s icon!")
         .setDescription("[Direct Link]("+message.guild.iconURL+")")
         .setImage(message.guild.iconURL)
-        .setFooter("Powered by "+ client.user.username +"™")
+        .setFooter("Powered by "+client.user.username+"™")
 
     message.channel.send({embed}).catch(console.error);
 }
@@ -263,7 +268,7 @@ if (command === 'link') {
         var embed = new Discord.RichEmbed()
             .setColor(config.embedColor)
             .setTitle("All Links")
-            .setFooter("Powered by "+ client.user.username +"™")
+            .setFooter("Powered by "+client.user.username+"™")
 
         var text = "";
         for (var i = 0; i < links.length; i++) {
@@ -283,7 +288,7 @@ if (command === 'link') {
 
     if (x == null) {
         var linkName = args[0].toLowerCase();
-        message.reply("the link `"+ linkName +"` doesn't exist.").then(m => m.delete(5000));
+        message.reply("the link `"+ linkName +"` doesn't exist.");
         return;
     }
 
@@ -292,7 +297,7 @@ if (command === 'link') {
         .setAuthor("Link: "+ links[x].name.toLowerCase())
         .setTitle(links[x].link)
         .setDescription(links[x].description)
-        .setFooter("Powered by "+ client.user.username +"™")
+        .setFooter("Powered by "+client.user.username+"™")
 
         message.channel.send({embed}).catch(console.error);
 }
@@ -667,7 +672,7 @@ if (command === 'serverinfo') {
         .addField("Verification Level:", getVerification(guild))
         .addField("Member Count:", guild.memberCount)
         .addField("Channels:", getChannels(guild))
-        .setFooter("Powered by "+ client.user.username +"™")
+        .setFooter("Powered by "+client.user.username+"™")
 
     message.channel.send({embed}).catch(console.error);
 
@@ -730,7 +735,7 @@ if (command === 'serverinfo') {
 if (command === 'version') {
     message.delete(0);
 
-    message.channel.send("I am currently on version **"+ package.version +"**.").catch(console.error).then(m => m.delete(5000));
+    message.channel.send("I am currently on version **"+ package.version +"**.").catch(console.error);
 }
 
 // Bot Cosmetic Commands
@@ -738,7 +743,7 @@ if (command === 'setgame') {
     message.delete(0);
 
     var msgcontent = message.content.slice(config.prefix.length + command.length);
-    client.user.setPresence({game:{name:msgcontent, type:0}}).catch(console.error);
+    client.user.setPresence({game:{name:''+msgcontent+'', type:0}}).catch(console.error);
 }
 
 if (command === 'setstream') {
@@ -771,7 +776,7 @@ if (command === 'reset') {
     message.delete(0);
 
     client.user.setPresence({game:{name:config.prefix +"help", type:0}, status: "online"});
-    message.guild.member(client.user).setNickname('');
+    message.guild.member(client.user).setNickname("");
 }
 // End Bot Cosmetic Commands
 
