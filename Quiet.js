@@ -173,7 +173,6 @@ if (command === 'help') { // $help
 
       if (message.member.roles.has(modRole.id) || message.author.id === config.ownerID) {
           embed.addField("Moderator Commands:", helpMod, true); // If the author is the owner or has the mod role,
-          embed.addField("Poll Commands:", helpPoll, true); // send the following parsed texts.
       }
 
       if (message.author.id === config.ownerID) { // If the author is the owner...
@@ -550,7 +549,6 @@ if (command === 'unmute') {
     });
 }
 
-// Poll Commands
 if (command === "poll") { // $poll <title> | <description>
     message.delete(0);
 
@@ -625,7 +623,6 @@ if (command === "epoll") { // $epoll <title> | <descrition> | <choice A> | <choi
                 if (arg[6] != undefined) msg.react("🇪");
           }).catch(console.error);
 }
-// End Poll Commands
 
 } // End Mod Commands
 
