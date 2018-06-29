@@ -746,6 +746,18 @@ if (command === 'setgame') {
     client.user.setPresence({game:{name:''+msgcontent+'', type:0}}).catch(console.error);
 }
 
+if (command === 'setstream') {
+    message.delete(0);
+
+    if (args[0] == null || args[1] == null) return message.reply("you are missing arguments.").then(m => m.delete(5000));
+    if (!message.content.includes("https://twitch.tv/")) return message.reply("this is an invalid Twitch URL.").then(m => m.delete(5000));
+
+    var msgcontent = message.content.slice(config.prefix.length + command.length + args[0].length + 2);
+    client.user.setPresence({game:{name:msgcontent, type:1, url:args[0]}}).catch(console.error);
+
+    message.channel.send("I am now streaming `"+ msgcontent +"` at "+ args[0] +".").then(m => m.delete(5000));
+}
+
 if (command === 'setstatus') {
     message.delete(0);
 
