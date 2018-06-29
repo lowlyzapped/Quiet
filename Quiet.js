@@ -51,8 +51,13 @@ if (fs.existsSync(linksPath)) {
 
 client.on('ready', () => {
           console.log(client.user.username +" v"+ package.version +" online.");
+<<<<<<< HEAD
           client.user.setStatus('online'); //online, idle, dnd, invisible
           client.user.setPresence({game:{name:config.prefix+"help | v"+ package.version, type:0}});
+=======
+          client.user.setStatus("online"); //online, idle, dnd, invisible
+          client.user.setPresence({game:{name:config.prefix +"help | v"+ package.version, type:0}});
+>>>>>>> release-2.1
 });
 
 client.on('error', (err) => console.error(err));
@@ -112,7 +117,7 @@ client.on('guildMemberRemove', member => {
 
 client.on('message', message => {  // message function
 
-if (message.channel.type === 'dm' && message.content.startsWith(config.prefix)) { //if a message sent in DM starts with $
+if (message.channel.type === "dm" && message.content.startsWith(config.prefix)) { //if a message sent in DM starts with $
     message.author.send("**ACCESS DENIED**\nCan't perform commands in DM."); //denies everything
     return;
 }
@@ -195,7 +200,7 @@ if (command === "rules") {
         .setDescription(rulesText)
         .setFooter("Powered by "+client.user.username+"™")
 
-    message.reply('rules have been sent.')
+    message.reply("rules have been sent.")
         .then(m => m.delete(5000));
 
     message.author.send({embed})
@@ -231,11 +236,11 @@ if (command === 'avatar') {
 
     var embed = new Discord.RichEmbed()
         .setColor(0x696799)
-        .setDescription('[Direct Link](' + message.author.avatarURL + ')')
+        .setDescription("[Direct Link](" + message.author.avatarURL + ")")
         .setImage(message.author.avatarURL)
         .setFooter('Powered by '+client.user.username+'™')
 
-    message.reply('your avatar:');
+    message.reply("your avatar:");
     message.channel.send({embed}).catch(console.error);
 }
 
@@ -758,9 +763,8 @@ if (command === 'setnickname') {
 if (command === 'reset') {
     message.delete(0);
 
-    client.user.setPresence({game:{name:config.prefix + "help", type:0}});
-    client.user.setStatus("online");
-    message.guild.member(client.user).setNickname('');
+    client.user.setPresence({game:{name:config.prefix +"help", type:0}, status: "online"});
+    message.guild.member(client.user).setNickname("");
 }
 // End Bot Cosmetic Commands
 
