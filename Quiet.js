@@ -26,7 +26,7 @@ var helpOTextPath = "./files/help/helpOwner.md";
 var helpPTextPath = "./files/help/helpPoll.md";
 
 if (!fs.existsSync(helpBTextPath)) {
-    console.log("The file \""+ helpBTextPath +"\" does not exist. The "+config.prefix+"help command will be disabled.");
+    console.log("The file \""+ helpBTextPath +"\" does not exist. The "+ config.prefix +"help command will be disabled.");
 }
 
 if (!fs.existsSync(welcomeTextPath)) {
@@ -34,7 +34,7 @@ if (!fs.existsSync(welcomeTextPath)) {
 }
 
 if (!fs.existsSync(rulesTextPath)) {
-    console.log("The file \""+ rulesTextPath +"\" does not exist. The "+config.prefix+"rules command will be disabled.");
+    console.log("The file \""+ rulesTextPath +"\" does not exist. The "+ config.prefix +"rules command will be disabled.");
 }
 
 if (fs.existsSync(linksPath)) {
@@ -46,7 +46,7 @@ if (fs.existsSync(linksPath)) {
         }
     });
 } else {
-    console.log("The file \""+ linksPath +"\" does not exist. The "+config.prefix+"link command will be disabled.");
+    console.log("The file \""+ linksPath +"\" does not exist. The "+ config.prefix +"link command will be disabled.");
 }
 
 client.on('ready', () => {
@@ -243,8 +243,8 @@ if (command === 'servericon') {
 
     var embed = new Discord.RichEmbed()
         .setColor(config.embedColor)
-        .setTitle(message.guild.name+"'s icon!")
-        .setDescription("[Direct Link]("+message.guild.iconURL+")")
+        .setTitle(message.guild.name +"'s icon!")
+        .setDescription("[Direct Link]("+ message.guild.iconURL +")")
         .setImage(message.guild.iconURL)
         .setFooter("Powered by "+ client.user.username +"™")
 
@@ -329,7 +329,7 @@ if (command === 'roll') { // roll a dice
 if (command === 'rps') { // rock paper scissor
     message.delete(5000);
     if (args[0] != "rock" && args[0] != "paper" && args[0] != "scissors" && args[0] != "scissor") {
-        message.reply("an error occured. Do `"+config.prefix+"rps <rock/paper/scissors>`");
+        message.reply("an error occured. Do `"+ config.prefix +"rps <rock/paper/scissors>`");
         return;
     }
 
@@ -553,7 +553,7 @@ if (command === "poll") { // $poll <title> | <description>
     var desc = arg[1];
 
     if (arg[1] == undefined) {
-        message.reply("an error has occured. Please execute `"+config.prefix+"poll <title> | <description>`.").then(m => m.delete(5000));
+        message.reply("an error has occured. Please execute `"+ config.prefix +"poll <title> | <description>`.").then(m => m.delete(5000));
         return;
     }
 
@@ -577,7 +577,7 @@ if (command === "epoll") { // $epoll <title> | <descrition> | <choice A> | <choi
     var arg = str.split("|");
 
     if (arg[1] == undefined || arg[2] == undefined || arg[3] == undefined) {
-        message.reply("there are missing arguments. Please excute `"+config.prefix+"epoll <title> | <description> | <choice 1> | <choice 2>`")
+        message.reply("there are missing arguments. Please excute `"+ config.prefix +"epoll <title> | <description> | <choice 1> | <choice 2>`")
           .then(m => m.delete(5000))
           .catch(console.error);
         return;
