@@ -297,14 +297,14 @@ if (command === 'link') {
 }
 
 if (command === 'coin') { // flip a coin
-  message.delete(0);
-  var flip = Math.floor(Math.random() * 2 + 1);
-  if (flip === 1) {
-      message.channel.send("Flipped **Tails** !").then(m => m.delete(5000));
-  }
-  else {
-      message.channel.send("Flipped **Heads** !").then(m => m.delete(5000));
-  }
+    message.delete(0);
+    var flip = Math.floor(Math.random() * 2 + 1);
+    if (flip === 1) {
+        message.channel.send("Flipped **Tails** !").then(m => m.delete(5000));
+    }
+    else {
+        message.channel.send("Flipped **Heads** !").then(m => m.delete(5000));
+    }
 }
 
 if (command === 'roll') { // roll a dice
