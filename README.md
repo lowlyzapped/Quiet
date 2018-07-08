@@ -12,7 +12,7 @@ To get Quiet's awesome code working on your own bot, simply follow these steps:
 In order for the `$rules` and `$link` commands, as well as the welcome message to work, simply fill in:
 - "rules.md", located in the "files" folder.
 - "welcome.md", located in the "files" folder.
-- "links.json", located int he files folder.
+- "links.json", located in he files folder.
 
 # New features
 I will updating Quiet whenever I have major command breakthroughs. If you have any interesting new features you'd like to see implemented in Quiet, you are warmly welcomed to make a **pull request** on this repo.
