@@ -132,7 +132,7 @@ const command = args.shift().toLowerCase(); // fancy magic
 if (command === 'ping') { // $ping
     message.delete(0); // Automatically deletes the author's message.
     if (message.author.id !== config.ownerID) return; // If the author isn't the owner, stop.
-    message.channel.send("Latency of **"+Math.round(client.ping)+"** ms.").then(m => m.delete(2000)); // Checks pings
+    message.channel.send("Latency of **"+ Math.round(client.ping) +"** ms.").then(m => m.delete(2000)); // Checks pings
 }
 
 if (command === 'help') { // $help
