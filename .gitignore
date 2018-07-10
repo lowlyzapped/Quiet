@@ -8,3 +8,8 @@ files/welcome.md
 files/links.json
 
 *.bat
+
+
+
+REFACTORING-TEMPLATE/*
+Remove at some point ^
