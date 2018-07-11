@@ -2,10 +2,10 @@
 
 config.json
 
-files/rules.md
-files/welcome.md
+plugins/links/links.json
 
-files/links.json
+plugins/members/rules.md
+plugins/members/welcome.md
 
 *.bat
 
