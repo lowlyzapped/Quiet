@@ -1,19 +1,34 @@
 exports.init = function(client) {
 
+var Discord = require("discord.js"),
+    fs = require('fs'),
+    path = require('path');
+
+var linksFile = "links.json";
+var linksConfig = null;
+
 exports.commands = [
     "link"
 ]
 
+var linksPath = path.join(__dirname, linksFile);
+if (fs.existsSync(linksPath)) {
+    fs.readFile(linksPath, 'utf8', (e, data) => {
+        try {
+            linksConfig = JSON.parse(data);
+        } catch (e) {
+            console.error("Unable to parse \"links.json\".");
+        }
+    });
+} else {
+    console.error("\"links.json\" does not exist.");
+}
+
 exports["link"] = {
-    usage: "`$link <link-name>` - Sends the requested link. Will display",
+    usage: "Sends the requested link. Will display all available links if none is specified.",
     needsAuth: false,
-    process: function(message, args) {
+    process: function(message, args, config) {
         message.delete(0);
-
-        var linksPath = "./links.json";
-        var linksConfig = null;
-
-        if (!fs.existsSync(linksPath)) return;
 
         var links = linksConfig.links;
 

@@ -1,9 +1,10 @@
 var Discord = require('discord.js');
+
 var config = require('./config.json');
 var package = require('./package.json');
-// var plugins = require('./plugins.js');
 var plugins = [
-    'links/links.js'
+    'links/links.js',
+    'members/members.js'
 ];
 
 if (config.token == "" || config.prefix == "") {
@@ -12,31 +13,23 @@ if (config.token == "" || config.prefix == "") {
 }
 
 var client = new Discord.Client();
-// var commands = {};
-//
-// var context = {
-//     commands: commands,
-//     client: client,
-//     config: config,
-//     package: package
-// };
-
-// plugins.init(context);
-
-// client.on('error', err => {
-//     if (err.code && err.code == 'ECONNRESET') {
-//         console.error("Connection reset");
-//         return;
-//     }
-// });
+var commands = [];
+var commandObjs = [];
 
 client.on('error', (err) => console.error(err));
 
 client.on('ready', () => {
-          for (var i = 0; i < plugins.length; i++) {
-              var plugin = require('./plugins/'+ plugins[i]);
-              plugin.init(client);
-          }
+    for (var i = 0; i < plugins.length; i++) {
+        var plugin = require('./plugins/'+ plugins[i]);
+        plugin.init(client);
+
+        for (var j = 0; j < plugin.commands.length; j++) {
+            commands.push(plugin.commands[j]);
+            commandObjs.push(plugin[plugin.commands[j]])
+            console.log("Loaded command: "+ plugin.commands[j]);
+            console.log(commandObjs);
+        }
+    }
 
           console.log(client.user.username +" v"+ package.version +" online.");
 
@@ -45,31 +38,36 @@ client.on('ready', () => {
 });
 
 client.on('message', async message => {
-  if (message.channel.type === "dm" && message.content.startsWith(config.prefix)) { //if a message sent in DM starts with $
-      message.author.send("**ACCESS DENIED**\nCan't perform commands in DM."); //denies everything
-      return;
-  }
+    if (message.channel.type === "dm" && message.content.startsWith(config.prefix)) { //if a message sent in DM starts with $
+        message.author.send("**ACCESS DENIED**\nCan't perform commands in DM."); //denies everything
+        return;
+    }
 
-  if (message.author.bot || !message.content.startsWith(config.prefix)) return; // if message doesn't start with $, abort
+    if (message.author.bot || !message.content.startsWith(config.prefix)) return; // if message doesn't start with $, abort
 
     var args = message.content.slice(config.prefix.length).trim().split(/ +/g);
-    var commandName = args.shift().toLowerCase();
+    var command = args.shift().toLowerCase();
 
     var authorised = message.member.roles.some(r => config.authorisedRoles.includes(r.name));
 
-    for (var i = 0; i < commands.commands.length; i++) {
-        if (commands.commands[i].toLowerCase() == command.toLowerCase()) {
-            var cmd = commands[command.toLowerCase()];
+    for (var i = 0; i < commands.length; i++) {
+        if (commands[i].toLowerCase() == command.toLowerCase()) {
+            var cmd = commandObjs[i];
             if (cmd.needsAuth && !authorised) {
-                message.reply('you do not have the permissions needed to use this commands!');
+                message.reply("you do not have the permissions needed to use this command.");
                 return;
             }
-            cmd.process(message, args);
+            cmd.process(message, args, config);
         }
     }
 
-    if (message.author.id === config.ownerID) { // $!stop
-        if (commandName === '!stop') { // STOP THE BOT
+    if (message.author.id === config.ownerID) {
+        if (command === 'ping') { // $ping
+            message.delete(0); // Automatically deletes the author's message.
+            message.channel.send("Latency of **"+ Math.round(client.ping) +"** ms.").then(m => m.delete(2000)); // Checks pings
+        }
+
+        if (command === '!stop') { // $!stop
             console.log(client.user.username +" has been deactivated.");
             process.exit(1); // Stop the bot, for real.
         }
