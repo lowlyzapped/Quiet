@@ -13,7 +13,7 @@ exports.commands = [
 exports["avatar"] = {
     usage: "Sends the user his own avatar.",
     needsAuth: false,
-    process: function(message, config) {
+    process: function(message, args, config) {
         message.delete(5000);
 
         var embed = new Discord.RichEmbed()
@@ -30,7 +30,7 @@ exports["avatar"] = {
 exports["getavatar"] = {
     usage: "Sends the targeted user's avatar.",
     needsAuth: true,
-    process: function(message, config) {
+    process: function(message, args, config) {
         message.delete(0);
         var member = message.mentions.members.first();
 
