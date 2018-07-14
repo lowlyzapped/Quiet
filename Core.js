@@ -3,6 +3,7 @@ var Discord = require('discord.js');
 var config = require('./config.json');
 var package = require('./package.json');
 var plugins = [
+    'games/games.js',
     'links/links.js',
     'members/members.js'
 ];
@@ -26,8 +27,6 @@ client.on('ready', () => {
         for (var j = 0; j < plugin.commands.length; j++) {
             commands.push(plugin.commands[j]);
             commandObjs.push(plugin[plugin.commands[j]])
-            console.log("Loaded command: "+ plugin.commands[j]);
-            console.log(commandObjs);
         }
     }
 
@@ -64,11 +63,11 @@ client.on('message', async message => {
     if (message.author.id === config.ownerID) {
         if (command === 'ping') { // $ping
             message.delete(0); // Automatically deletes the author's message.
-            message.channel.send("Latency of **"+ Math.round(client.ping) +"** ms.").then(m => m.delete(2000)); // Checks pings
+            message.channel.send("Latency of **"+ Math.round(client.ping) +"** ms.").then(m => m.delete(2000)); // Checks ping
         }
 
         if (command === '!stop') { // $!stop
-            console.log(client.user.username +" has been deactivated.");
+            console.log(client.user.username +" has been deactivated."); // Output in console
             process.exit(1); // Stop the bot, for real.
         }
     }
