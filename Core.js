@@ -3,6 +3,7 @@ var Discord = require('discord.js');
 var config = require('./config.json');
 var package = require('./package.json');
 var plugins = [
+    'bot/bot.js',
     'games/games.js',
     'links/links.js',
     'members/members.js',
@@ -70,6 +71,12 @@ client.on('message', async message => {
         if (command === '!stop') { // $!stop
             console.log(client.user.username +" has been deactivated."); // Output in console
             process.exit(1); // Stop the bot, for real.
+        }
+
+        if (command === 'version') {
+            message.delete(0);
+
+            message.channel.send("I am currently on version **"+ package.version +"**.").catch(console.error);
         }
     }
 
