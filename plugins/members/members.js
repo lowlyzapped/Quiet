@@ -73,7 +73,7 @@ exports["joined"] = {
                 end += mins.toString() + " (UTC)"
 
                 message.reply("you joined on " + end)
-              }).catch(console.error);
+            }).catch(console.error);
     }
 }
 

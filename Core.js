@@ -5,7 +5,8 @@ var package = require('./package.json');
 var plugins = [
     'games/games.js',
     'links/links.js',
-    'members/members.js'
+    'members/members.js',
+    'server/server.js'
 ];
 
 if (config.token == "" || config.prefix == "") {
