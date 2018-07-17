@@ -3,6 +3,7 @@ var Discord = require('discord.js');
 var config = require('./config.json');
 var package = require('./package.json');
 var plugins = [
+    'admin/admin.js',
     'bot/bot.js',
     'games/games.js',
     'links/links.js',
