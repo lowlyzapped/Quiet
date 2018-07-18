@@ -4,6 +4,7 @@ var configPath = "./config.json";
 var rulesTextPath = "./files/rules.md";
 var welcomeTextPath = "./files/welcome.md";
 var linksPath = "./files/links.json";
+var pollsPath = "./files/polls.json"
 
 console.log("Initiating CR34T10N process.");
 
@@ -40,5 +41,14 @@ if (!fs.existsSync(linksPath)) { // links.json
         '{\n  "links":[{"name":"repo","link":"https://github.com/TheV0rtex/Quiet","description":"Quiet\'s source code."}]\n}',
         function (linksLog) {
         console.log('+ "./files/links.json" was created.');
+    });
+}
+
+if (!fs.existsSync(pollsPath)) { // polls.json
+    fs.writeFile(
+        './files/polls.json',
+        '{}',
+        function (pollsLog) {
+        console.log('+ "./files/polls.json" was created.');
     });
 }

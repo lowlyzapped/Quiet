@@ -19,6 +19,9 @@ var welcomeTextPath = "./files/welcome.md";
 var linksPath = "./files/links.json";
 var linksConfig = null;
 
+var pollsPath = "./files/polls.json";
+var polls = null;
+
 var helpBTextPath = "./files/help/helpBasic.md"; // TODO make this into a seperate file
 var helpBCTextPath = "./files/help/helpBotCosmetic.md";
 var helpMTextPath = "./files/help/helpMod.md";
@@ -47,6 +50,18 @@ if (fs.existsSync(linksPath)) {
     });
 } else {
     console.log("The file \""+ linksPath +"\" does not exist. The "+ config.prefix +"link command will be disabled.");
+}
+
+if (fs.existsSync(pollsPath)) {
+    fs.readFile(pollsPath, 'utf8', (e, pollData) => {
+        try {
+            polls = JSON.parse(pollData);
+        } catch (e) {
+            console.log(e);
+        }
+    });
+} else {
+    console.log("The file \""+ pollsPath +"\" does not exist. The "+ config.prefix +"link command will be disabled.");
 }
 
 client.on('ready', () => {
@@ -617,6 +632,108 @@ if (command === "epoll") { // $epoll <title> | <descrition> | <choice A> | <choi
                 if (arg[5] != undefined) msg.react("🇩");
                 if (arg[6] != undefined) msg.react("🇪");
           }).catch(console.error);
+}
+
+var poll = polls[client.user.id];
+if (command === 'apoll') {
+    message.delete(0);
+    if (!fs.existsSync(pollsPath)) return;
+
+    var str = message.content.slice(config.prefix.length + command.length).trim();
+    var arg = str.split("|");
+    var title = arg[0];
+    var desc = arg[1];
+
+    if (arg[1] == undefined) {
+        message.reply("an error has occured. Please execute `"+ config.prefix +"apoll <title> | <description>`.").then(m => m.delete(5000));
+        return;
+    }
+
+    if (!polls[client.user.id]) polls[client.user.id] = {
+        pollType: "yn",
+        title: title,
+        desc: desc,
+        yes: 0,
+        no: 0,
+        author: message.author.tag
+    }
+    else {
+        poll.pollType = "yn"
+        poll.title = title;
+        poll.desc = desc;
+        poll.yes = 0,
+        poll.no = 0,
+        poll.author = message.author.tag
+    }
+
+    fs.writeFile(pollsPath, JSON.stringify(polls), (err) => {
+        if (err) console.error(err)
+    });
+
+    var embed = new Discord.RichEmbed()
+        .setColor(config.embedColor)
+        .setTitle(title)
+        .setDescription(desc +"\n\nYes: **0**     No: **0**")
+        .setFooter("Poll opened by "+ poll.author)
+        .setTimestamp()
+
+    message.channel.send({embed}).catch(console.error);
+}
+
+if (command === 'results') {
+    var poll = polls[client.user.id];
+
+    var embed = new Discord.RichEmbed()
+        .setColor(config.embedColor)
+        .setTitle(poll.title)
+        .setDescription(poll.desc +"\n\nYes: **"+ poll.yes +"**     No: **"+ poll.no +"**")
+        .setFooter("Poll opened by "+ poll.author)
+        .setTimestamp()
+
+    message.channel.send({embed}).catch(console.error);
+}
+
+if (command === 'vote') {
+    message.delete(0);
+
+    if (poll.pollType === "yn") {
+        if (args[0] === "yes") poll.yes++;
+        if (args[0] === "no") poll.no++;
+
+        message.channel.send(message.author +" has voted.");
+    }
+
+    fs.writeFile(pollsPath, JSON.stringify(polls), (err) => {
+        if (err) console.error(err)
+    });
+}
+
+if (command === 'unvote') {
+    message.delete(0);
+
+    if (poll.pollType === "yn") {
+        if (args[0] === "yes") {
+            if (poll.yes === 0) {
+                message.reply("there are no votes for \"Yes\".");
+                return;
+            }
+            poll.yes--;
+        }
+
+        if (args[0] === "no") {
+            if (poll.no === 0) {
+                message.reply("there are no votes for \"No\".");
+                return;
+            }
+            poll.no--;
+        }
+
+        message.channel.send(message.author +" has unvoted.");
+    }
+
+    fs.writeFile(pollsPath, JSON.stringify(polls), (err) => {
+        if (err) console.error(err)
+    });
 }
 
 } // End Mod Commands
