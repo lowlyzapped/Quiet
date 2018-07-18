@@ -8,6 +8,7 @@ var plugins = [
     'games/games.js',
     'links/links.js',
     'members/members.js',
+    'polls/polls.js',
     'server/server.js'
 ];
 
