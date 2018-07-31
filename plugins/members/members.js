@@ -1,14 +1,53 @@
-exports.init = function(client) {
+exports.init = function(client, config) {
 
-var Discord = require("discord.js");
+var Discord = require("discord.js"),
+    fs = require('fs'),
+    path = require('path');
+
+var rulesFile = "rules.md";
+var rulesPath = path.join(__dirname, rulesFile);
+
+var welcomeFile = "welcome.md";
+var welcomePath = path.join(__dirname, welcomeFile);
+
+var configFile = "config.json";
+var configContent = null;
+var configPath = path.join(__dirname + '../../..', configFile); // Only for the memberAddEvent
 
 exports.commands = [
     "avatar",
     "getavatar",
     "joined",
     "members",
-    "memberlist"
+    "memberlist",
+    "rules"
 ]
+
+if (!fs.existsSync(rulesPath)) console.error("\""+ rulesFile +"\" does not exist. No rules will be sent to new members.");
+
+if (!fs.existsSync(welcomePath)) console.error("\""+ welcomeFile +"\" does not exist. No rules will be sent to new members.");
+
+if (fs.existsSync(configPath)) {
+    fs.readFile(configPath, 'utf8', (error, data) => {
+        try {
+            configContent = JSON.parse(data);
+        } catch (error) {
+            console.error("Unable to parse \""+ configFile +"\".");
+        }
+    });
+} else {
+    console.error("\""+ configFile +"\" does not exist.");
+}
+
+client.on('guildMemberAdd', (member) => {
+    var config = configContent;
+    memberAddEvent(member, config);
+});
+
+client.on('guildMemberRemove', (member) => {
+    var config = configContent;
+    memberRemoveEvent(member, config);
+});
 
 exports["avatar"] = {
     usage: "Sends the user his own avatar.",
@@ -102,6 +141,84 @@ exports["memberlist"] = {
                               "**YouTubers**: "+ youtuberRole.members.keyArray().length +"\n"+
                               "**Streamers**: "+ streamerRole.members.keyArray().length).catch(console.error);
     }
+}
+
+exports["rules"] = {
+    usage: "Sends the user the rules of the server.",
+    needsAuth: false,
+    process: function(message, args, config) {
+        message.delete(5000);
+
+        if (!fs.existsSync(rulesPath)) return;
+        else {
+            fs.readFile(rulesPath, 'utf8', (err, rulesContent) => {
+                if (err) return console.log(err);
+
+                var embed = new Discord.RichEmbed()
+                    .setColor(config.embedColor)
+                    .setAuthor(message.guild.name +" Rules", message.guild.iconURL)
+                    .setDescription(rulesContent)
+                    .setFooter("Powered by "+ client.user.username +"™")
+
+                message.author.send({embed}).catch(console.error);
+            });
+        }
+
+        message.reply("rules have been sent.").then(m => m.delete(5000));
+    }
+}
+
+
+function memberAddEvent(member, config) {
+    var logChannel = member.guild.channels.find("name", config.logChannelName);
+    if (!logChannel) return;
+
+    var embed = new Discord.RichEmbed()
+        .setColor(config.joinColor)
+        .setAuthor("Member Joined", member.user.avatarURL)
+        .setDescription(member.user +" | "+ member.user.tag)
+        .setFooter("Member no. "+ member.guild.memberCount)
+        .setTimestamp()
+
+    logChannel.send({embed}).catch(console.error);
+
+    if (!fs.existsSync(welcomePath)) {
+        return;
+    } else {
+        fs.readFile(welcomePath, 'utf8', (err, welcomeContent) => {
+            if (err) return console.log(err);
+
+            member.send("Hello "+ member.user.username +"! "+ welcomeContent);
+        });
+    }
+
+    if (!fs.existsSync(rulesPath)) return;
+    else {
+        fs.readFile(rulesPath, 'utf8', (err, rulesContent) => {
+            if (err) return console.log(err);
+
+            var embed = new Discord.RichEmbed()
+                .setColor(config.embedColor)
+                .setAuthor(member.guild.name +" Rules", member.guild.iconURL)
+                .setDescription(rulesContent)
+                .setFooter("Powered by "+ client.user.username +"™")
+
+            member.send({embed}).catch(console.error);
+        });
+    }
+}
+
+function memberRemoveEvent(member, config) {
+    var logChannel = member.guild.channels.find("name", config.logChannelName);
+    if (!logChannel) return;
+
+    var embed = new Discord.RichEmbed()
+        .setColor(config.leaveColor)
+        .setAuthor("Member Left", member.user.avatarURL)
+        .setDescription(member.user +" | "+ member.user.tag)
+        .setTimestamp()
+
+    logChannel.send({embed}).catch(console.error);
 }
 
 } // no touchy

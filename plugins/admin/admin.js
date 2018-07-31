@@ -193,7 +193,7 @@ exports["unmute"] = {
             if (!logChannel) return;
 
             var embed = new Discord.RichEmbed()
-                .setColor(config.unmuteColor)
+                .setColor(config.muteColor)
                 .setAuthor("Member Unmuted "+ config.unmuteEmoji, target.user.avatarURL)
                 .setDescription(target.user +" | "+ target.user.tag +
                                 "\nUnmuted by "+ message.author)

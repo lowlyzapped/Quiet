@@ -13,10 +13,10 @@ exports.commands = [
 
 var linksPath = path.join(__dirname, linksFile);
 if (fs.existsSync(linksPath)) {
-    fs.readFile(linksPath, 'utf8', (e, data) => {
+    fs.readFile(linksPath, 'utf8', (err, data) => {
         try {
             linksConfig = JSON.parse(data);
-        } catch (e) {
+        } catch (err) {
             console.error("Unable to parse \"links.json\".");
         }
     });
