@@ -1,6 +1,7 @@
 # Configuration Files
 
 config.json
+pluginorder.json
 
 plugins/links/links.json
 
