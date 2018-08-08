@@ -33,7 +33,7 @@ exports["kick"] = {
         target.kick().then((target) => {
             message.channel.send(target +" has been kicked.").then(m => m.delete(5000));
 
-            var logChannel = message.guild.channels.find("name", config.logChannel);
+            var logChannel = message.guild.channels.find("name", config.logChannelName);
             if (!logChannel) return;
 
             logChannel.bulkDelete(1, false).then(() => {
@@ -72,7 +72,7 @@ exports["ban"] = {
         target.ban(1).then((target) => {
           message.channel.send(target +" has been banned.").then(m => m.delete(5000));
 
-          var logChannel = message.guild.channels.find("name", config.logChannel);
+          var logChannel = message.guild.channels.find("name", config.logChannelName);
           if (!logChannel) return;
 
           logChannel.bulkDelete(1, false).then(() => {
@@ -141,7 +141,7 @@ exports["mute"] = {
           target.addRole(role).then((target) => {
               message.channel.send(target.user.username +" has been muted.").then(m => m.delete(5000));
 
-              var logChannel = message.guild.channels.find("name", config.logChannel);
+              var logChannel = message.guild.channels.find("name", config.logChannelName);
               if (!logChannel) return;
 
               var embed = new Discord.RichEmbed()
@@ -189,7 +189,7 @@ exports["unmute"] = {
         target.removeRole(role).then((target) => {
             message.channel.send(target.user.username +" has been unmuted.").then(m => m.delete(5000));
 
-            var logChannel = message.guild.channels.find("name", config.logChannel);
+            var logChannel = message.guild.channels.find("name", config.logChannelName);
             if (!logChannel) return;
 
             var embed = new Discord.RichEmbed()

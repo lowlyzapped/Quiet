@@ -11,7 +11,8 @@ console.log("Initiating CR34T10N process.");
 if (!fs.existsSync(configPath)) { // config.json
     fs.writeFile(
         configPath,
-        '{\n  "token":"",\n  "prefix":"",\n  "ownerID":"",\n\n  "logChannelName":"",\n\n'+
+        '{\n  "token":"",\n  "prefix":"",\n  "ownerID":"",\n\n'+
+        '  "logChannelName":"",\n  "sendRules":false,\n  "sendWelcome":false,\n\n'+
         '  "muteRole":"",\n  "muteEmoji":"",\n  "unmuteEmoji":"",\n\n'+
         '  "embedColor":"0x",\n  "joinColor":"0x18bb68",\n  "leaveColor":"0xe9890f",\n'+
         '  "kickColor":"0xff3b00",\n  "banColor":"0xff0000",\n  "muteColor":"0x696969",\n\n'+

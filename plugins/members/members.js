@@ -25,7 +25,7 @@ exports.commands = [
 
 if (!fs.existsSync(rulesPath)) console.error("\""+ rulesFile +"\" does not exist. No rules will be sent to new members.");
 
-if (!fs.existsSync(welcomePath)) console.error("\""+ welcomeFile +"\" does not exist. No rules will be sent to new members.");
+if (!fs.existsSync(welcomePath)) console.error("\""+ welcomeFile +"\" does not exist. No greetings will be sent to new members.");
 
 if (fs.existsSync(configPath)) {
     fs.readFile(configPath, 'utf8', (error, data) => {
@@ -182,29 +182,30 @@ function memberAddEvent(member, config) {
 
     logChannel.send({embed}).catch(console.error);
 
-    if (!fs.existsSync(welcomePath)) {
-        return;
-    } else {
-        fs.readFile(welcomePath, 'utf8', (err, welcomeContent) => {
-            if (err) return console.log(err);
+    if (config.sendWelcome == true) {
+        if (fs.existsSync(welcomePath)) {
+            fs.readFile(welcomePath, 'utf8', (err, welcomeContent) => {
+                if (err) return console.log(err);
 
-            member.send("Hello "+ member.user.username +"! "+ welcomeContent);
-        });
+                member.send("Hello "+ member.user.username +"! "+ welcomeContent);
+            });
+        }
     }
 
-    if (!fs.existsSync(rulesPath)) return;
-    else {
-        fs.readFile(rulesPath, 'utf8', (err, rulesContent) => {
-            if (err) return console.log(err);
+    if (config.sendRules == true) {
+        if (fs.existsSync(rulesPath)) {
+            fs.readFile(rulesPath, 'utf8', (err, rulesContent) => {
+                if (err) return console.log(err);
 
-            var embed = new Discord.RichEmbed()
-                .setColor(config.embedColor)
-                .setAuthor(member.guild.name +" Rules", member.guild.iconURL)
-                .setDescription(rulesContent)
-                .setFooter("Powered by "+ client.user.username +"™")
+                var embed = new Discord.RichEmbed()
+                    .setColor(config.embedColor)
+                    .setAuthor(member.guild.name +" Rules", member.guild.iconURL)
+                    .setDescription(rulesContent)
+                    .setFooter("Powered by "+ client.user.username +"™")
 
-            member.send({embed}).catch(console.error);
-        });
+                member.send({embed}).catch(console.error);
+            });
+        }
     }
 }
 
