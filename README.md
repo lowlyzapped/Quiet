@@ -6,13 +6,13 @@ To get Quiet's awesome code working on your own bot, simply follow these steps:
 
 1. Run `$ node Initializer.js`.
 2. Fill in the "config.json" file generated.
-3. Run `$ node Quiet.js`.
+3. Run `$ node Core.js`.
 
 # Text files
-In order for the `$rules` and `$link` commands, as well as the welcome message to work, simply fill in:
-- "rules.md", located in the "files" folder.
-- "welcome.md", located in the "files" folder.
-- "links.json", located int he files folder.
+In order for the `$rules` and `$link` commands, as well as the welcome message to work, change their value to `true` in  the "config.json" file, then fill in the following files:
+- "rules.md", located in the "members" plugin.
+- "welcome.md", located in the "members" plugin.
+- "links.json", located in the "links" plugin.
 
 # New features
 I will updating Quiet whenever I have major command breakthroughs. If you have any interesting new features you'd like to see implemented in Quiet, you are warmly welcomed to make a **pull request** on this repo.

@@ -1,10 +1,17 @@
 # Configuration Files
 
 config.json
+pluginOrder.json
 
-files/rules.md
-files/welcome.md
+plugins/links/links.json
 
-files/links.json
+plugins/members/rules.md
+plugins/members/welcome.md
 
 *.bat
+
+
+
+files/*.json
+files/*.md
+^ To ignore while there's still the refactoring.
