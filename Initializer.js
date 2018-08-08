@@ -12,7 +12,8 @@ if (!fs.existsSync(configPath)) { // config.json
     fs.writeFile(
         configPath,
         '{\n  "token":"",\n  "prefix":"",\n  "ownerID":"",\n\n'+
-        '  "logChannelName":"",\n  "sendRules":false,\n  "sendWelcome":false,\n\n'+
+        '  "logChannelName":"",\n\n'+
+        '  "sendRules":false,\n  "sendWelcome":false,\n  "sendLinks":false,\n\n'+
         '  "muteRole":"",\n  "muteEmoji":"",\n  "unmuteEmoji":"",\n\n'+
         '  "embedColor":"0x",\n  "joinColor":"0x18bb68",\n  "leaveColor":"0xe9890f",\n'+
         '  "kickColor":"0xff3b00",\n  "banColor":"0xff0000",\n  "muteColor":"0x696969",\n\n'+
@@ -23,7 +24,7 @@ if (!fs.existsSync(configPath)) { // config.json
     );
 }
 
-if (!fs.existsSync(pluginOrderPath)) {
+if (!fs.existsSync(pluginOrderPath)) { // pluginOrder.json
     fs.writeFile(
         pluginOrderPath,
         '[{"name":"bot","sortOrder":1},\n{"name":"games","sortOrder":2},\n{"name":"links","sortOrder":3},\n'+

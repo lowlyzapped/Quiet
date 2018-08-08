@@ -30,44 +30,48 @@ exports["link"] = {
     process: function(message, args, config) {
         message.delete(0);
 
-        var links = linksConfig.links;
+        if (config.sendLinks == true) {
+            var links = linksConfig.links;
 
-        if (args[0] == null) {
+            if (args[0] == null) {
+                var embed = new Discord.RichEmbed()
+                    .setColor(config.embedColor)
+                    .setTitle("All Links")
+                    .setFooter("Powered by "+ client.user.username +"™")
+
+                var text = "";
+                for (var i = 0; i < links.length; i++) {
+                    text += "`" + links[i].name + "` - " + links[i].description + "\n";
+                }
+                embed.setDescription(text);
+
+                message.channel.send({embed}).catch(console.error);
+                return;
+            }
+
+            var x = null;
+            for (var i = 0; i < links.length; i++) {
+                 if (links[i].name.toLowerCase() == args[0].toLowerCase())
+                 x = i;
+            }
+
+            if (x == null) {
+                var linkName = args[0].toLowerCase();
+                message.reply("the link `"+ linkName +"` doesn't exist.");
+                return;
+            }
+
             var embed = new Discord.RichEmbed()
                 .setColor(config.embedColor)
-                .setTitle("All Links")
+                .setAuthor("Link: "+ links[x].name.toLowerCase())
+                .setTitle(links[x].link)
+                .setDescription(links[x].description)
                 .setFooter("Powered by "+ client.user.username +"™")
 
-            var text = "";
-            for (var i = 0; i < links.length; i++) {
-                text += "`" + links[i].name + "` - " + links[i].description + "\n";
-            }
-              embed.setDescription(text);
-
-              message.channel.send({embed}).catch(console.error);
-              return;
-        }
-
-        var x = null;
-        for (var i = 0; i < links.length; i++) {
-             if (links[i].name.toLowerCase() == args[0].toLowerCase())
-             x = i;
-        }
-
-        if (x == null) {
-            var linkName = args[0].toLowerCase();
-            message.reply("the link `"+ linkName +"` doesn't exist.");
-            return;
-        }
-
-        var embed = new Discord.RichEmbed()
-            .setColor(config.embedColor)
-            .setAuthor("Link: "+ links[x].name.toLowerCase())
-            .setTitle(links[x].link)
-            .setDescription(links[x].description)
-            .setFooter("Powered by "+ client.user.username +"™")
-
             message.channel.send({embed}).catch(console.error);
+        }
+        else message.reply("the `"+ config.prefix +"link` command is disabled.").then(m => m.delete(5000));
+
     }
 }
 
