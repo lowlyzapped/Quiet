@@ -1,47 +1,69 @@
 var fs = require('fs');
 
 var configPath = "./config.json";
-var rulesTextPath = "./files/rules.md";
-var welcomeTextPath = "./files/welcome.md";
-var linksPath = "./files/links.json";
-var pollsPath = "./files/polls.json"
+var pluginOrderPath = "./pluginOrder.json";
+var rulesPath = "./plugins/members/rules.md";
+var welcomePath = "./plugins/members/welcome.md";
+var linksPath = "./plugins/links/links.json";
 
 console.log("Initiating CR34T10N process.");
 
 if (!fs.existsSync(configPath)) { // config.json
     fs.writeFile(
-        './config.json',
-        '{\n  "token":"",\n  "prefix":"",\n  "ownerID":"",\n  "embedColor":"0x",\n  "logChannel":"",\n  "modRole":"",\n  "muteRole":""\n}',
-        function (configLog) {
-        console.log('+ "./config.json" was created.');
-    });
+        configPath,
+        '{\n  "token":"",\n  "prefix":"",\n  "ownerID":"",\n\n'+
+        '  "logChannelName":"",\n\n'+
+        '  "sendRules":false,\n  "sendWelcome":false,\n  "sendLinks":false,\n\n'+
+        '  "muteRole":"",\n  "muteEmoji":"",\n  "unmuteEmoji":"",\n\n'+
+        '  "embedColor":"0x",\n  "joinColor":"0x18bb68",\n  "leaveColor":"0xe9890f",\n'+
+        '  "kickColor":"0xff3b00",\n  "banColor":"0xff0000",\n  "muteColor":"0x696969",\n\n'+
+        '  "authorisedRoles":[]\n}',
+        function (log) {
+            console.log("+ \""+ configPath +"\" was created.");
+        }
+    );
 }
 
-if (!fs.existsSync(rulesTextPath)) { // rules.md
+if (!fs.existsSync(pluginOrderPath)) { // pluginOrder.json
     fs.writeFile(
-        './files/rules.md',
+        pluginOrderPath,
+        '[{"name":"bot","sortOrder":1},\n{"name":"games","sortOrder":2},\n{"name":"links","sortOrder":3},\n'+
+        '{"name":"members","sortOrder":4},\n{"name":"moderation","sortOrder":5},\n'+
+        '{"name":"polls","sortOrder":6},\n{"name":"server","sortOrder":7}]',
+        function (log) {
+            console.log("+ \""+ pluginOrderPath +"\" was created.");
+        }
+    );
+}
+
+if (!fs.existsSync(rulesPath)) { // rules.md
+    fs.writeFile(
+        rulesPath,
         "This is the \"rules.md\" document. Add your server's rules here.",
-        function (rulesLog) {
-        console.log('+ "./files/rules.md" was created.');
-    });
+        function (log) {
+            console.log("+ \""+ rulesPath +"\" was created.");
+        }
+    );
 }
 
-if (!fs.existsSync(welcomeTextPath)) { // welcome.md
+if (!fs.existsSync(welcomePath)) { // welcome.md
     fs.writeFile(
-        './files/welcome.md',
+        welcomePath,
         "This is the \"welcome.md\" document. Add your welcome message at members' arrival here.",
-        function (welcomeLog) {
-        console.log('+ "./files/welcome.md" was created.');
-    });
+        function (log) {
+            console.log("+ \""+ welcomePath +"\" was created.");
+        }
+    );
 }
 
 if (!fs.existsSync(linksPath)) { // links.json
     fs.writeFile(
-        './files/links.json',
+        linksPath,
         '{\n  "links":[{"name":"repo","link":"https://github.com/TheV0rtex/Quiet","description":"Quiet\'s source code."}]\n}',
-        function (linksLog) {
-        console.log('+ "./files/links.json" was created.');
-    });
+        function (log) {
+            console.log("+ \""+ linksPath +"\" was created.");
+        }
+    );
 }
 
 if (!fs.existsSync(pollsPath)) { // polls.json

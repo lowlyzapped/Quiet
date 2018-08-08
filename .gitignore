@@ -1,11 +1,11 @@
 # Configuration Files
 
 config.json
+pluginOrder.json
 
-files/rules.md
-files/welcome.md
+plugins/links/links.json
 
-files/links.json
-files/polls.json
+plugins/members/rules.md
+plugins/members/welcome.md
 
 *.bat
