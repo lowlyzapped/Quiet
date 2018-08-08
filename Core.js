@@ -102,9 +102,9 @@ client.on('message', async message => {
         var member = message.member;
         var pluginOrder = [];
 
-        var canOrder = fs.existsSync('./pluginorder.json'); // THIS WORKS
+        var canOrder = fs.existsSync('./pluginOrder.json'); // THIS WORKS
         if (canOrder) {
-            pluginOrder = require('./pluginorder.json');
+            pluginOrder = require('./pluginOrder.json');
 
             pluginOrder.sort(function(a, b) {
                 return a.sortOrder - b.sortOrder;
