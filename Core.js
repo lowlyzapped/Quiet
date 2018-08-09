@@ -37,10 +37,16 @@ client.on('ready', () => {
         }
     }
 
-          console.log(client.user.username +" v"+ package.version +" online.");
+    if (config.sendRules == false) console.log("> Rules will not be sent to new members.");
+    if (config.sendWelcome == false) console.log("> Greetings will not be sent to new members.");
 
-          client.user.setStatus("online"); //online, idle, dnd, invisible
-          client.user.setPresence({game:{name:config.prefix +"help | v"+ package.version, type:0}});
+    if (config.sendLinks == false) console.log("> The \""+ config.prefix +"link\" command is disabled.");
+    if (config.sendRules == false) console.log("> The \""+ config.prefix +"rules\" command is disabled.");
+
+    console.log(client.user.username +" v"+ package.version +" online.");
+
+    client.user.setStatus("online"); //online, idle, dnd, invisible
+    client.user.setPresence({game:{name:config.prefix +"help | v"+ package.version, type:0}});
 });
 
 client.on('message', async message => {

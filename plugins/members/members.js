@@ -149,22 +149,23 @@ exports["rules"] = {
     process: function(message, args, config) {
         message.delete(5000);
 
-        if (!fs.existsSync(rulesPath)) return;
-        else {
-            fs.readFile(rulesPath, 'utf8', (err, rulesContent) => {
-                if (err) return console.log(err);
+        if (config.sendRules == true) {
+            if (fs.existsSync(rulesPath)) {
+                fs.readFile(rulesPath, 'utf8', (err, rulesContent) => {
+                    if (err) return console.log(err);
 
-                var embed = new Discord.RichEmbed()
-                    .setColor(config.embedColor)
-                    .setAuthor(message.guild.name +" Rules", message.guild.iconURL)
-                    .setDescription(rulesContent)
-                    .setFooter("Powered by "+ client.user.username +"™")
+                    var embed = new Discord.RichEmbed()
+                        .setColor(config.embedColor)
+                        .setAuthor(message.guild.name +" Rules", message.guild.iconURL)
+                        .setDescription(rulesContent)
+                        .setFooter("Powered by "+ client.user.username +"™")
 
-                message.author.send({embed}).catch(console.error);
-            });
-        }
+                    message.author.send({embed}).catch(console.error);
+                    message.reply("rules have been sent.").then(m => m.delete(5000));
+                });
+            }
+        } else message.reply("the `"+ config.prefix +"rules` command is disabled.").then(m => m.delete(5000));
 
-        message.reply("rules have been sent.").then(m => m.delete(5000));
     }
 }
 
