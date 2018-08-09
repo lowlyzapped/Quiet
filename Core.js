@@ -41,6 +41,7 @@ client.on('ready', () => {
     if (config.sendWelcome == false) console.log("> Greetings will not be sent to new members.");
 
     if (config.sendLinks == false) console.log("> The \""+ config.prefix +"link\" command is disabled.");
+    if (config.sendRules == false) console.log("> The \""+ config.prefix +"rules\" command is disabled.");
 
     console.log(client.user.username +" v"+ package.version +" online.");
 
