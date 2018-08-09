@@ -1,7 +1,0 @@
-{
-  "links":[{"name":"repo","link":"https://github.com/TheV0rtex/Quiet","description":"Quiet's source code."},
-           {"name":"bottut","link":"https://www.youtube.com/watch?v=6Tf3TRx18q4&list=PLZVwbIwZwZt6PNRRaHfu-ZP94LHoxTm9T","description":"Discord.js bot Youtube tutorials series."},
-           {"name":"gitgud","link":"https://docs.google.com/document/d/14c_HM8c2znmiFB00whNEYekx6LKyvF99XnE6BuTzwXI/edit?usp=sharing","description":"An introduction to Git repositories, by monodokimes#1072."}
-]
-}
-
