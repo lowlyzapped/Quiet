@@ -5,6 +5,7 @@ var pluginOrderPath = "./pluginOrder.json";
 var rulesPath = "./plugins/members/rules.md";
 var welcomePath = "./plugins/members/welcome.md";
 var linksPath = "./plugins/links/links.json";
+var pollsPath = "./plugins/polls/polls.json";
 
 console.log("Initiating CR34T10N process.");
 
