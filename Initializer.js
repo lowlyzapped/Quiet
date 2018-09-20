@@ -5,6 +5,7 @@ var pluginOrderPath = "./pluginOrder.json";
 var rulesPath = "./plugins/members/rules.md";
 var welcomePath = "./plugins/members/welcome.md";
 var linksPath = "./plugins/links/links.json";
+var pollsPath = "./plugins/polls/polls.json";
 
 console.log("Initiating CR34T10N process.");
 
@@ -28,8 +29,8 @@ if (!fs.existsSync(pluginOrderPath)) { // pluginOrder.json
     fs.writeFile(
         pluginOrderPath,
         '[{"name":"bot","sortOrder":1},\n{"name":"games","sortOrder":2},\n{"name":"links","sortOrder":3},\n'+
-        '{"name":"members","sortOrder":4},\n{"name":"moderation","sortOrder":5},\n'+
-        '{"name":"polls","sortOrder":6},\n{"name":"server","sortOrder":7}]',
+        '{"name":"members","sortOrder":4},\n{"name":"miscellanious","sortOrder":5},\n'+
+        '{"name":"moderation","sortOrder":6},\n{"name":"polls","sortOrder":7},\n{"name":"server","sortOrder":8}]',
         function (log) {
             console.log("+ \""+ pluginOrderPath +"\" was created.");
         }

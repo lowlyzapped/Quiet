@@ -4,9 +4,9 @@ Created by TheV0rtex.
 # Setting it up
 To get Quiet's awesome code working on your own bot, simply follow these steps:
 
-1. Run `$ node Initializer.js`.
+1. Run `$ node initializer.js`.
 2. Fill in the "config.json" file generated.
-3. Run `$ node Core.js`.
+3. Run `$ node core.js`.
 
 # Text files
 In order for the `$rules` and `$link` commands, as well as the welcome message to work, change their value to `true` in  the "config.json" file, then fill in the following files:
