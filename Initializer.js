@@ -65,12 +65,3 @@ if (!fs.existsSync(linksPath)) { // links.json
         }
     );
 }
-
-if (!fs.existsSync(pollsPath)) { // polls.json
-    fs.writeFile(
-        './files/polls.json',
-        '{}',
-        function (pollsLog) {
-        console.log('+ "./files/polls.json" was created.');
-    });
-}
