@@ -1,6 +1,6 @@
 {
   "name": "Quiet",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TheV0rtex/Quiet"
@@ -15,6 +15,7 @@
     "path": "^0.12.7",
     "request": "^2.83.0",
     "sodium": "^2.0.3",
+    "strict-uri-encode": "^2.0.0",
     "uws": "^0.14.5",
     "ytdl-core": "^0.20.1"
   }
