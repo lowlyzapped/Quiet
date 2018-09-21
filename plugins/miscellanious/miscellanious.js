@@ -1,7 +1,6 @@
 exports.init = function(client) {
 
 var Discord = require("discord.js");
-var encode = require('strict-uri-encode');
 
 exports.commands = [
     "lmgtfy"
@@ -13,10 +12,11 @@ exports["lmgtfy"] = {
     process: function(message, args, config) {
         message.delete(0);
 
-        var question = encode(args.join(" "));
-        var link = "https://www.lmgtfy.com/?q="+ question;
+        var str = message.content.slice(config.prefix.length + 7);
+        var res = str.replace(/ +/g, "+");
+        var link = "https://www.lmgtfy.com/?q="+ res;
 
-        message.channel.send("<"+link+">"); // Enclosing in ** makes it bold, enclosing in <> hides the embed that comes from the link.
+        message.channel.send("<"+link+">"); // Enclosing in <> hides the embed that comes from the link.
 
     }
 }
