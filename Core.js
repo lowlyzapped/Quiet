@@ -10,7 +10,6 @@ var plugins = [
     'games/games.js',
     'links/links.js',
     'members/members.js',
-    'miscellanious/miscellanious.js',
     'moderation/moderation.js',
     'polls/polls.js',
     'server/server.js'
