@@ -8,7 +8,8 @@ var linksFile = "links.json";
 var linksConfig = null;
 
 exports.commands = [
-    "link"
+    "link",
+    "lmgtfy"
 ]
 
 var linksPath = path.join(__dirname, linksFile);
@@ -71,6 +72,21 @@ exports["link"] = {
             message.channel.send({embed}).catch(console.error);
         }
         else message.reply("the `"+ config.prefix +"link` command is disabled.").then(m => m.delete(5000));
+
+    }
+}
+
+exports["lmgtfy"] = {
+    usage: "Let Quiet google that for you.",
+    needsAuth: false,
+    process: function(message, args, config) {
+        message.delete(0);
+
+        var str = message.content.slice(config.prefix.length + 7);
+        var res = str.replace(/ +/g, "+");
+        var link = "https://www.lmgtfy.com/?q="+ res;
+
+        message.channel.send("<"+link+">"); // Enclosing in <> hides the embed that comes from the link.
 
     }
 }
