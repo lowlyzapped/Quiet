@@ -30,9 +30,9 @@ exports["poll"] = {
             .setTimestamp()
 
         message.channel.send({embed})
-        .then(msg => {
-              msg.react("👍");
-              msg.react("👎");
+        .then(async function (msg) {
+              await msg.react("👍");
+              await msg.react("👎");
         }).catch(console.error);
     }
 }
@@ -80,12 +80,15 @@ exports["epoll"] = {
                                                           ":regional_indicator_e: "+arg[6]);
 
             message.channel.send({embed})
-            .then(msg => {
-                msg.react("🇦");
-                msg.react("🇧");
-                if (arg[4] != undefined) msg.react("🇨");
-                if (arg[5] != undefined) msg.react("🇩");
-                if (arg[6] != undefined) msg.react("🇪");
+            .then(async function (msg) {
+                await msg.react("🇦");
+                await msg.react("🇧");
+                await msg.react("🇨");
+                await msg.react("🇩");
+                await msg.react("🇪");
+                 // if (arg[4] != undefined)
+                 // if (arg[5] != undefined)
+                 // if (arg[6] != undefined)
             }).catch(console.error);
     }
 }
