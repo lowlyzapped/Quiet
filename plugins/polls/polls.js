@@ -64,20 +64,20 @@ exports["epoll"] = {
             if (arg[4] != undefined) embed.setDescription(arg[1]+"\n\n"+
                                                           ":regional_indicator_a: "+arg[2]+"\n"+
                                                           ":regional_indicator_b: "+arg[3]+"\n"+
-                                                          ":regional_indicator_b: "+arg[4]);
+                                                          ":regional_indicator_c: "+arg[4]);
 
             if (arg[5] != undefined) embed.setDescription(arg[1]+"\n\n"+
                                                           ":regional_indicator_a: "+arg[2]+"\n"+
                                                           ":regional_indicator_b: "+arg[3]+"\n"+
-                                                          ":regional_indicator_b: "+arg[4]+"\n"+
-                                                          ":regional_indicator_b: "+arg[5]);
+                                                          ":regional_indicator_c: "+arg[4]+"\n"+
+                                                          ":regional_indicator_d: "+arg[5]);
 
             if (arg[6] != undefined) embed.setDescription(arg[1]+"\n\n"+
                                                           ":regional_indicator_a: "+arg[2]+"\n"+
                                                           ":regional_indicator_b: "+arg[3]+"\n"+
-                                                          ":regional_indicator_b: "+arg[4]+"\n"+
-                                                          ":regional_indicator_b: "+arg[5]+"\n"+
-                                                          ":regional_indicator_b: "+arg[6]);
+                                                          ":regional_indicator_c: "+arg[4]+"\n"+
+                                                          ":regional_indicator_d: "+arg[5]+"\n"+
+                                                          ":regional_indicator_e: "+arg[6]);
 
             message.channel.send({embed})
             .then(msg => {
