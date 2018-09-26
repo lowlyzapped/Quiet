@@ -30,7 +30,7 @@ exports["poll"] = {
             .setTimestamp()
 
         message.channel.send({embed})
-        .then(asunc function msg {
+        .then(async function (msg) {
               await msg.react("👍");
               await msg.react("👎");
         }).catch(console.error);
