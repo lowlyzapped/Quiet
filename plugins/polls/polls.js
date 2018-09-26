@@ -80,7 +80,7 @@ exports["epoll"] = {
                                                           ":regional_indicator_e: "+arg[6]);
 
             message.channel.send({embed})
-            .then(async function msg {
+            .then(async function (msg) {
                 msg.react("🇦");
                 msg.react("🇧");
                 if (arg[4] != undefined) await msg.react("🇨");
