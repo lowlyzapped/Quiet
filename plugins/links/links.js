@@ -31,7 +31,7 @@ exports["link"] = {
     process: function(message, args, config) {
         message.delete(0);
 
-        if (config.sendLinks == true) {
+        if (config.permissions.sendLinks == true) {
             var links = linksConfig.links;
 
             if (args[0] == null) {

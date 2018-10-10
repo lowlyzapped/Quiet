@@ -1,13 +1,9 @@
 # Configuration Files
+node_modules/*
 
 config.json
 pluginOrder.json
 
-plugins/links/links.json
-
 plugins/members/rules.md
 plugins/members/welcome.md
-
-*.bat
-
-Quiet.js
+plugins/links/links.json

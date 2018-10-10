@@ -149,7 +149,7 @@ exports["rules"] = {
     process: function(message, args, config) {
         message.delete(5000);
 
-        if (config.sendRules == true) {
+        if (config.permissions.sendRules == true) {
             if (fs.existsSync(rulesPath)) {
                 fs.readFile(rulesPath, 'utf8', (err, rulesContent) => {
                     if (err) return console.log(err);
@@ -183,7 +183,7 @@ function memberAddEvent(member, config) {
 
     logChannel.send({embed}).catch(console.error);
 
-    if (config.sendWelcome == true) {
+    if (config.permissions.sendWelcome == true) {
         if (fs.existsSync(welcomePath)) {
             fs.readFile(welcomePath, 'utf8', (err, welcomeContent) => {
                 if (err) return console.log(err);
@@ -193,7 +193,7 @@ function memberAddEvent(member, config) {
         }
     }
 
-    if (config.sendRules == true) {
+    if (config.permissions.sendRules == true) {
         if (fs.existsSync(rulesPath)) {
             fs.readFile(rulesPath, 'utf8', (err, rulesContent) => {
                 if (err) return console.log(err);
