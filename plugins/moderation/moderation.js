@@ -65,7 +65,7 @@ exports["ban"] = {
         }
 
         if (!authorised || target.id === config.ownerID || target.id === client.user.id) {
-            message.reply("I am not allowed to kick this user.").then(m => m.delete(5000));
+            message.reply("I am not allowed to ban this user.").then(m => m.delete(5000));
             return;
         }
 
